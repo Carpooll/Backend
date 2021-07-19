@@ -8,8 +8,9 @@ from rest_framework.pagination import PageNumberPagination
 from django.contrib.auth.models import User
 from users.models import Profile
 #serializers
-from users.serializers.users import NewUserSerializer
+#from users.serializers.users import NewUserSerializer
 from users.serializers.signup import UserSignupSerializer
+from users.serializers.users import UserSerializer
 # from users.serializers.verified import UserVerifiedSerializer
 #permissions
 # from users.permissions import IsOwnProfile
@@ -22,5 +23,15 @@ def signup(request):
         serializer = UserSignupSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        data = NewUserSerializer(user).data
-        return Response(data)
+        #data = NewUserSerializer(user).data
+        return Response(user)
+
+class ProfileCompletionViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes=[]
+
+class ProfileEditViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes=[]

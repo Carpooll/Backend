@@ -8,6 +8,7 @@ from django.utils import timezone
 #rest_framework
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+from rest_framework.authtoken.models import Token
 #models
 from django.contrib.auth.models import User
 from users.models import Profile
@@ -61,12 +62,10 @@ class UserSignupSerializer(serializers.Serializer):
             email=data['email']
         )
         profile = Profile(user=user)
-
         profile.save()
+        token, create = Token.objects.get_or_create(user=user)
 
-        #self.send_confirmation_email( user)
-
-        return user
+        return user.username, token.key
 
     def send_confirmation_email(self, user):
         """"send confirmation email """
