@@ -6,7 +6,7 @@ from users.models import Profile
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'school_id', 'first_name', 'last_name', 'balance']
+    list_display = ['id', 'user', 'first_name', 'last_name', 'balance']
     list_display_links = ['id', 'user']
     list_editable = ['first_name', 'last_name', 'balance']
     search_fields = ['first_name', 'last_name', 'balance']
