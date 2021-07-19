@@ -65,7 +65,7 @@ class UserSignupSerializer(serializers.Serializer):
         profile.save()
         token, create = Token.objects.get_or_create(user=user)
 
-        return user.username, token.key
+        return user.id, token.key
 
     def send_confirmation_email(self, user):
         """"send confirmation email """

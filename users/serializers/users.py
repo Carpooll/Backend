@@ -4,17 +4,16 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import User
 from users.models import Profile
 
-class ProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Profile
-        fields = ['age', 'city','profile_picture_url', 'header_img_url', 'country', 'followers', 'likes', 'posts']
-
-
 """ class NewUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
         fields=['id'] """
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -25,9 +24,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id','username','first_name','last_name', 'profile']
 
     def update(self, instance, validated_data):
-        profile_data = validated_data.pop('profile')
-
         profile = instance.profile
+        print(instance)
+        profile_data = validated_data.pop('profile')
 
         instance.username = validated_data.get('username', instance.username)
         instance.first_name = validated_data.get('first_name', instance.first_name)

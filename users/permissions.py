@@ -12,9 +12,10 @@ class IsOwnProfile(BasePermission):
     def has_object_permission(self, request, view, obj):
         path = request.path.split('/')
         user_id = int(path[2])
-
+        
         try:
             user = User.objects.get(username=request.user.username)
+            print(user)
             if request.user.id == user_id:
                 return True
         except user.DoesNotExist:

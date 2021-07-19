@@ -13,7 +13,7 @@ from users.serializers.signup import UserSignupSerializer
 from users.serializers.users import UserSerializer
 # from users.serializers.verified import UserVerifiedSerializer
 #permissions
-# from users.permissions import IsOwnProfile
+from users.permissions import IsOwnProfile
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -29,7 +29,7 @@ def signup(request):
 class ProfileCompletionViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes=[]
+    permission_classes=[IsOwnProfile]
 
 class ProfileEditViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
