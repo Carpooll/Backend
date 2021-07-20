@@ -29,6 +29,6 @@ class UserVerifiedSerializer(serializers.Serializer):
     def save(self):
         payload = self.context['payload']
         user = User.objects.get(username=payload['user'])
-        user.profile.is_verified = True
+        user.profile.is_verify = True
         user.profile.save()
         return user

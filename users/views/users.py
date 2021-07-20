@@ -26,15 +26,28 @@ def signup(request):
         #data = NewUserSerializer(user).data
         return Response(user)
 
-@api_view(['POST'])
-def account_verification(request):
-    if request.method == 'POST':
-        serializer = UserVerifiedSerializer(data=request.data)
+@api_view(['GET'])
+def args_demo(request, si):
+    if request.method == 'GET':
+        demo = request.path.split('/')
+        
+        data = {'message':f'{demo[3]}'}
+        return Response(data)
+
+@api_view(['GET'])
+def account_verification(request, token):
+    if request.method == 'GET':
+        token = request.path.split('/')
+        token = token[3]
+        """data = {'token':f'{token}'}
+        return Response(data) """
+        data = {'token':f'{token}'}
+        serializer = UserVerifiedSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         data = {'message':'accouont verified successfully'}
-        return Response(data, status=status.HTTP_200_OK)
-
+        return Response(data, status=status.HTTP_200_OK) 
+        
 class ProfileCompletionViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
