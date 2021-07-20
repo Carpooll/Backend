@@ -13,7 +13,7 @@ class UserLoginSerializer(serializers.Serializer):
         user = authenticate(username = data['username'], password=data['password'])
         if not user:
             raise serializers.ValidationError({status.HTTP_401_UNAUTHORIZED:'Invalid credentials'})
-        if not user.profile.is_verified:
+        if not user.profile.is_verify:
             raise serializers.ValidationError({status.HTTP_401_UNAUTHORIZED:'User not verified'})
         
         self.context['user'] = user
