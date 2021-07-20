@@ -17,5 +17,6 @@ router.register(r'profile', ProfileCompletionViewSet, basename='profile')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/signup/', users.signup, name="signup"),
+    path('users/verified/', users.account_verification, name="verify"),
     path('',include(router.urls))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

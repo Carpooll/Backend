@@ -11,7 +11,7 @@ from users.models import Profile
 #from users.serializers.users import NewUserSerializer
 from users.serializers.signup import UserSignupSerializer
 from users.serializers.users import UserSerializer
-# from users.serializers.verified import UserVerifiedSerializer
+from users.serializers.verified import UserVerifiedSerializer
 #permissions
 from users.permissions import IsOwnProfile
 from rest_framework.permissions import IsAuthenticated
@@ -26,6 +26,15 @@ def signup(request):
         #data = NewUserSerializer(user).data
         return Response(user)
 
+@api_view(['POST'])
+def account_verification(request):
+    if request.method == 'POST':
+        serializer = UserVerifiedSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        data = {'message':'accouont verified successfully'}
+        return Response(data, status=status.HTTP_200_OK)
+
 class ProfileCompletionViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -35,3 +44,5 @@ class ProfileEditViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes=[]
+
+    
