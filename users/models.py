@@ -5,8 +5,7 @@ class Profile (models.Model):
     ''''user information'''
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     #on username is saved the school id for practice reasons
-    first_name= models.CharField(max_length=100,default=None, null=True, blank=True)
-    last_name= models.CharField(max_length=100,default=None, null=True, blank=True)
+
     phone= models.CharField(max_length=10,default=None, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now=True)

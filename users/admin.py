@@ -6,10 +6,10 @@ from users.models import Profile
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'first_name', 'last_name', 'balance']
+    list_display = ['id', 'user', 'balance']
     list_display_links = ['id', 'user']
-    list_editable = ['first_name', 'last_name', 'balance']
-    search_fields = ['first_name', 'last_name', 'balance']
+    list_editable = ['balance']
+    search_fields = ['balance']
     list_filter = ['user__is_active', 'user__is_staff', 'created_at', 'modify_at']
 
 class ProfileInLine(admin.StackedInline):
