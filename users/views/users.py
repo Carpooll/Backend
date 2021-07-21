@@ -33,13 +33,11 @@ def account_verification(request, token):
     if request.method == 'GET':
         token = request.path.split('/')
         token = token[3]
-        """data = {'token':f'{token}'}
-        return Response(data) """
         data = {'token':f'{token}'}
         serializer = UserVerifiedSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        data = {'message':'accouont verified successfully'}
+        data = {'message':'account verified successfully'}
         return Response(data, status=status.HTTP_200_OK) 
         
 
