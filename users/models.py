@@ -56,4 +56,4 @@ class Driver (models.Model):
 class Passenger(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
 
-    driver = models.OneToOneField(Driver, on_delete=models.CASCADE)
+    driver = models.OneToManyField(Driver, on_delete=models.CASCADE)
