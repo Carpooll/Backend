@@ -19,8 +19,10 @@ router.register(r'profile', ProfileCompletionViewSet, basename='profile')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/signup/', users.signup, name="signup"),
+    path('passengers/', users.PassengerListView.as_view(), name="passengers"),
+    path('drivers/', users.DriverListView.as_view(), name="drivers"),
     path('users/verified/<token>/', users.account_verification, name="verify"),
-    path('users/args_demo/<si>/', users.args_demo, name="demo"),
-    path('users/login/', login.as_view(), name="login"),   
+    path('users/login/', login.as_view(), name="login"),  
+    path('users/passenger/', users.is_passenger, name="passenger"),
     path('',include(router.urls))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

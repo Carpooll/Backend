@@ -2,13 +2,24 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from django.contrib.auth.models import User
-from users.models import Profile
+from users.models import Profile, Passenger, Driver
 
 """ class NewUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
         fields=['id'] """
+
+class PassengerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Passenger
+        fields="__all__"
+
+
+class DriverSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Driver
+        fields="__all__"
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:

@@ -11,7 +11,7 @@ from rest_framework.validators import UniqueValidator
 from rest_framework.authtoken.models import Token
 #models
 from django.contrib.auth.models import User
-from users.models import Profile
+from users.models import Profile, Passenger, Driver
 #utilities
 import jwt
 from datetime import timedelta
@@ -42,7 +42,11 @@ class UserSignupSerializer(serializers.Serializer):
         max_length=128, 
         allow_blank=False)
 
-    
+    is_driver = serializers.CharField(
+        min_length=1,
+        max_length=1, 
+        allow_blank=False)
+
     def validate(self,data):
 
         passwd = data['password']
@@ -63,9 +67,16 @@ class UserSignupSerializer(serializers.Serializer):
         )
         profile = Profile(user=user)
         profile.save()
+        is_driver = int(data['is_driver'])
+        if(is_driver == 1):
+            driver = Driver(profile=profile)
+            driver.save()
+        else:
+            passenger = Passenger(profile=profile)
+            passenger.save()
         token, create = Token.objects.get_or_create(user=user)
         self.send_confirmation_email(user)
-        return user.id, token.key
+        return user.id-1, token.key
 
     def send_confirmation_email(self, user):
         """"send confirmation email """

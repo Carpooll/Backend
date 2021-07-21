@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     #locals
     'users',
     'rides',
+    'notifications',
 ]
 
 MIDDLEWARE = [

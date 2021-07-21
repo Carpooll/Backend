@@ -46,14 +46,14 @@ class Car(models.Model):
 
 class Driver (models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
-    card_owner= models.CharField(max_length=100, default=None)
-    car = models.OneToOneField(Car, on_delete=models.CASCADE)
+    card_owner= models.CharField(max_length=100, default=None, null=True, blank=True)
+    car = models.OneToOneField(Car, on_delete=models.CASCADE, null=True, blank=True)
     ''''payment information'''
-    card_number = models.CharField(max_length=16, )
-    exp_date = models.CharField(max_length=5, default=None)
-    ccv = models.IntegerField()
+    card_number = models.CharField(max_length=16, null=True, blank=True)
+    exp_date = models.CharField(max_length=5, default=None, null=True, blank=True)
+    ccv = models.IntegerField(null=True, blank=True)
 
 class Passenger(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
 
-    driver = models.OneToManyField(Driver, on_delete=models.CASCADE)
+    driver = models.ForeignKey(Driver, on_delete=models.CASCADE, null=True, blank=True)

@@ -155,3 +155,4 @@ cython_debug/
 /entorno
 /.vscode
 .env
+*/migrations/
