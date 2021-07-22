@@ -17,7 +17,7 @@ router = DefaultRouter()
 
 router.register(r'profile', ProfileCompletionViewSet, basename='profile')
 
-router.register(r'notifications', RequestNotificationViewSet, basename='notifications')
+router.register(r'requests', RequestNotificationViewSet, basename='requests')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -10,9 +10,5 @@ class Notification(models.Model):
     sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='the_sender', null=True, blank=True)
 class Request(models.Model):
     notification = models.OneToOneField(Notification, on_delete=models.CASCADE)
-    status_options = {
-        ('1', 'pending'),
-        ('2', 'accepted'),
-        ('3', 'denied')
-    }
-    status = models.CharField(choices=status_options, max_length=1, default=1)
+
+    status = models.CharField(max_length=8, default='pending')
