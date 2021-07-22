@@ -23,8 +23,5 @@ class NotificationSerializer(serializers.Serializer):
             sendee=sendee
         )
         notification.save()
-        request = Request(
-            notification=notification,
-            sender = sender
-        )
-        request.save()
+        
+        return notification

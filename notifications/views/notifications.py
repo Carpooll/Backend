@@ -17,11 +17,8 @@ from rest_framework.permissions import IsAuthenticated
 @api_view(['POST'])
 def RequestDriver(request):
     print(request.data)
-    serializer = ResquestDriverSerializer()
-    serializer.create(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    serializer.save() 
-    data = {
-        "message":"ahuevo"
-    }
-    return Response(data=data, status=status.HTTP_200_OK)
+    data = request.data
+    serializer = ResquestDriverSerializer(data=data)
+    serializer.is_valid()
+    notification = serializer.save()
+    return Response(data=notification, status=status.HTTP_200_OK)
