@@ -62,22 +62,26 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
         ''' getting the notification element from the request'''
         notification = requestNotification.notification
 
-        driver = User.objects.get(Profile.id == notification.sendee.id)
+        # driver = Profile.objects.get(id = notification.sendee.id)
         # passenger = Profile.objects.get(id  = notification.sender.id)
-        print(driver)
-        print(passenger)
+        # print(driver.id)
+        # print(passenger.id)
 
-        if requestNotification.status == 'accept':
-
-            
-            passenger.driver = Driver.objects.get(profile == driver)
+        if requestNotification.status == 'accept': 
+            passenger = Passenger.objects.get(profile = notification.sender)
+            driver = Driver.objects.get(profile = notification.sendee)
+            passenger.driver = driver
             passenger.save()
         
-        notification.sendee = passenger
-        notification.sender = driver
+        notification.sendee = Profile.objects.get(id  = notification.sender.id)
+        notification.sender = Profile.objects.get(id = notification.sendee.id)
         notification.save()
 
-        return Response(requestNotification.status, status=status.HTTP_201_CREATED)\
+        data = {
+            "message" : "Se acepto la solicitud"
+        }
+
+        return Response(data, status=status.HTTP_201_CREATED)\
 
     def perform_create(self, serializer):
         return serializer.save()

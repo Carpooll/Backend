@@ -28,14 +28,14 @@ class NotificationOwnerPermission(BasePermission):
     def has_object_permission(self, request,view, obj):
         path = request.path.split('/')
         notification_id = int(path[2])
+               
+        profile_id = request.user.profile.id
         
-        user_id = request.user.id
-        profile = Profile.objects.get(user.id == user_id)
-        profile_id = profile.id
-
         notification = Notification.objects.get(id = notification_id)
+        sendee = notification.sendee.id
+
         try:
-            if (notification.sendee.id == profile_id):
+            if (sendee == profile_id):
                 return True
         except Notification.NotificationOwnerPermission:
             return False
