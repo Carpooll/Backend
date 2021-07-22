@@ -9,13 +9,15 @@ from users.views.login import UserLoginAPIView as login
 from users.views import users
 from notifications.views import notifications
 from users.views.users import ProfileCompletionViewSet
-
+from notifications.views.notifications import RequestNotificationViewSet
 #Rest_framework 
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 
 router.register(r'profile', ProfileCompletionViewSet, basename='profile')
+
+router.register(r'notifications', RequestNotificationViewSet, basename='notifications')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

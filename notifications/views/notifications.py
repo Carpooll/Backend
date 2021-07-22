@@ -7,18 +7,26 @@ from rest_framework.pagination import PageNumberPagination
 #models
 from django.contrib.auth.models import User
 from users.models import Profile, Passenger, Driver
-from notifications.models import Request
+from notifications.models import Request, Notification
 #serializers
-from notifications.serializers.request_driver import ResquestDriverSerializer
+from notifications.serializers.notifications import NotificationSerializer
 #permissions
 from users.permissions import IsOwnProfile
 from rest_framework.permissions import IsAuthenticated
+
+
+class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
+    queryset = Notification.objects.all()
+    serializer_class =  NotificationSerializer
+    permissions = []
+    def perform_create(self, serializer):
+        notification = serializer.save()
 
 @api_view(['POST'])
 def RequestDriver(request):
     print(request.data)
     data = request.data
-    serializer = ResquestDriverSerializer(data=data)
+    serializer = RequestDriverSerializer(data=data)
     serializer.is_valid()
     notification = serializer.save()
     return Response(data=notification, status=status.HTTP_200_OK)
