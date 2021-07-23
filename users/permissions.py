@@ -23,6 +23,27 @@ class IsOwnProfile(BasePermission):
         except user.DoesNotExist:
             return False
 
+class IsDriver(BasePermission):
+    '''check if is driver'''
+    def has_object_permission(self, request, view, obj):
+        profile = request.user.profile
+        try:
+            driver = Driver.objects.get(profile=profile)
+            return True
+        except Driver.DoesNotExist:
+            return False
+
+        
+class IsPassenger(BasePermission):
+    '''check if is driver'''
+    def has_object_permission(self, request, view, obj):
+        profile = request.user.profile
+        try:
+            passenger = Passenger.objects.get(profile=profile)
+            return True
+        except Passenger.DoesNotExist:
+            return False
+
 class NotificationOwnerPermission(BasePermission):
     '''check if is owner of the notification'''
     def has_object_permission(self, request,view, obj):

@@ -15,7 +15,7 @@ from users.serializers.users import UserSerializer, PassengerSerializer, DriverS
 from users.serializers.verified import UserVerifiedSerializer
 
 #permissions
-from users.permissions import IsOwnProfile
+from users.permissions import IsOwnProfile, IsDriver, IsPassenger
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -61,6 +61,42 @@ class DriverListView(ListAPIView):
     serializer_class = DriverSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = PageNumberPagination
+
+""" class DriversPassengers(ListAPIView):
+    '''listing the passengers of each driver'''
+    queryset = Passenger.objects.all()
+    serializer_class = PassengerSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
+ """
+
+class DriverPassengersViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    serializer_class =  PassengerSerializer
+    permissions = [IsDriver]
+
+    def list(self, request, *args, **kwargs):
+        driver = request.user.profile.id
+        print(driver)
+        queryset = self.filter_queryset(Passenger.objects.filter(driver=driver))
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+class PassengerDriver(viewsets.GenericViewSet, mixins.ListModelMixin):
+    
+    serializer_class =  DriverSerializer
+    permissions = [IsPassenger]
+
+    def list(self, request, *args, **kwargs):
+        passenger = request.user.profile
+        passenger = Passenger.objects.filter(profile=passenger)
+        driver_id = passenger[0].driver.id
+        driver = Profile.objects.filter(id=driver_id)
+        """v NO SIRVE ALAVERGA v"""
+        queryset = self.filter_queryset(Driver.objects.filter(profile=driver[0]))
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 class ProfileCompletionViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()

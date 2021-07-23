@@ -4,27 +4,17 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import User
 from users.models import Profile, Passenger, Driver
 
-""" class NewUserSerializer(serializers.ModelSerializer):
+class SimpleUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields=['id'] """
-
-class PassengerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Passenger
-        fields="__all__"
-
-
-class DriverSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Driver
-        fields="__all__"
+        fields = ['username','first_name','last_name']
 
 class ProfileSerializer(serializers.ModelSerializer):
+    user = SimpleUserSerializer()
     class Meta:
         model = Profile
-        fields = ['phone','balance', 'street', 'suburb', 'postal_code', 'internal_number', 'external_number', 'coordinate_x', 'coordinate_y']
+        fields = ['user','id','phone','balance', 'street', 'suburb', 'postal_code', 'internal_number', 'external_number', 'coordinate_x', 'coordinate_y']
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -32,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id','username','first_name','last_name', 'profile']
+        fields = ['username','first_name','last_name', 'profile']
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile')
@@ -75,4 +65,21 @@ class UserSerializer(serializers.ModelSerializer):
         profile.save()
 
         return instance
+
+class PassengerSerializer(serializers.ModelSerializer):
+
+    profile = ProfileSerializer()
+
+    class Meta:
+        model = Passenger
+        fields=['profile','driver']
+
+class DriverSerializer(serializers.ModelSerializer):
+    
+    profile = UserSerializer()
+
+    class Meta:
+        model = Driver
+        fields=['profile']
+
 
