@@ -6,18 +6,17 @@ from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 #models
 from django.contrib.auth.models import User
-from users.models import Profile, Passenger, Driver
+from users.models import Profile, Passenger, Driver, Car
 #serializers
 from users.serializers.is_passenger import IsPassenger
 #from users.serializers.users import NewUserSerializer
 from users.serializers.signup import UserSignupSerializer
-from users.serializers.users import UserSerializer, PassengerSerializer, DriverSerializer
+from users.serializers.users import UserSerializer, PassengerSerializer, DriverSerializer, CarSerilizer, DriverPrivSerializer
 from users.serializers.verified import UserVerifiedSerializer
 
 #permissions
-from users.permissions import IsOwnProfile, IsDriver, IsPassenger
+from users.permissions import IsOwnProfile, IsDriver, IsPassenger, HasCar
 from rest_framework.permissions import IsAuthenticated
-
 
 @api_view(['POST'])
 def signup(request):
@@ -72,31 +71,31 @@ class DriverListView(ListAPIView):
 
 class DriverPassengersViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     serializer_class =  PassengerSerializer
-    permissions = [IsDriver]
+    permissions = []
 
     def list(self, request, *args, **kwargs):
         driver = request.user.profile.id
-        print(driver)
         queryset = self.filter_queryset(Passenger.objects.filter(driver=driver))
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-class PassengerDriver(viewsets.GenericViewSet, mixins.ListModelMixin):
-    
+class PassengerDriver(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
+
     serializer_class =  DriverSerializer
     permissions = [IsPassenger]
 
-    def list(self, request, *args, **kwargs):
-        passenger = request.user.profile
-        passenger = Passenger.objects.filter(profile=passenger)
-        driver_id = passenger[0].driver.id
-        driver = Profile.objects.filter(id=driver_id)
-        """v NO SIRVE ALAVERGA v"""
-        queryset = self.filter_queryset(Driver.objects.filter(profile=driver[0]))
 
+    def list(self, request, *args, **kwargs):
+    
+        passenger = Passenger.objects.get(profile=request.user.profile)
+        print(request.user.profile)
+        driver_id = passenger.driver.id
+        driver = Profile.objects.get(id=driver_id)
+        print(driver.user.username)
+        queryset = self.filter_queryset(Driver.objects.filter(profile=driver))
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data) 
 
 class ProfileCompletionViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
@@ -107,3 +106,72 @@ class ProfileEditViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes=[]
+
+class CarViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.UpdateModelMixin):
+    queryset = Car.objects.all()
+    serializer_class = CarSerilizer
+    permissions = []
+    def create(self, request, *args, **kwargs):
+        
+        driver = Driver.objects.get(profile=request.user.profile)
+        if(driver.car != None):
+            response = {
+            "error":"car already exists, try update method instead",
+            "id":f"{driver.car.id}"
+            }
+            return Response(response, status=status.HTTP_403_FORBIDDEN)
+        car = Car.objects.create(
+            color = request.data['color'],
+            model = request.data['model'],
+            plates = request.data['plates'],
+            insurance = request.data['insurance'],
+            limit = request.data['limit'],
+            travel_cost = request.data['travel_cost'])
+
+        driver.car = car
+        driver.save()
+        response = {
+            "message":"success",
+            "id":f"{car.id}"
+        }
+        return Response(response, status=status.HTTP_201_CREATED)
+        
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = Car.objects.get(driver=Driver.objects.get(profile=request.user.profile))
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class PaymentViewSet(viewsets.GenericViewSet, mixins.UpdateModelMixin, mixins.RetrieveModelMixin):
+    queryset = Driver.objects.all()
+    serializer_class = DriverPrivSerializer
+    permission_classes=[IsOwnProfile]
+
+    def retrieve(self, request, *args, **kwargs):
+        id = request.path.split('/')
+        id=int(id[3])
+        instance = Driver.objects.get(profile = Profile.objects.get(id=id))
+
+        if instance.profile == request.user.profile:
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        id = request.path.split('/')
+        id=int(id[3])
+        if id == request.user.profile.id:
+            instance = Driver.objects.get(profile=Profile.objects.get(id=id))
+            serializer = self.get_serializer(instance, data=request.data, partial=partial)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            data = {
+                "error":"you dont have permission to perform this action"
+            }
+            return Response(data, status=status.HTTP_401_UNAUTHORIZED)

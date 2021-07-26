@@ -11,7 +11,7 @@ from notifications.models import Request, Notification
 #serializers
 from notifications.serializers.notifications import NotificationSerializer
 #permissions
-from users.permissions import NotificationOwnerPermission
+from users.permissions import NotificationOwnerPermission, HasDriver
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -21,9 +21,12 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
     permissions = []
     def get_permissions(self):
         permissions = []
-        if self.action in ['update', 'partial_update']:
+        if self.action in ['update', 'partial_update', 'destroy']:
             permissions.append(NotificationOwnerPermission)
-        
+
+        if self.action in ['create']:
+            permissions.append(HasDriver)
+
         return [permission() for permission in permissions]
 
     def create(self, request, *args, **kwargs):
@@ -88,19 +91,7 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
 
     def perform_create(self, serializer):
         return serializer.save()
-
-"""     def list(self,request,*args,**kwargs):
         
-        queryset = Notification.objects.filter(sendee = request.user.id) 
-        page = self.paginate_queryset(queryset)
-
-        if page is not None:
-            serializer = NotificationSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = NotificationSerializer(queryset, many=True)
-        return Response(serializer.data) """
-
 @api_view(['POST'])
 def RequestDriver(request):
     print(request.data)

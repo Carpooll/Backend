@@ -38,13 +38,14 @@ class Car(models.Model):
         ('6', 'Blue'),
     )
     color = models.CharField(max_length=1, choices=Colors)
-    plates = models.IntegerField()
+    plates = models.CharField(max_length=10)
     insurance = models.CharField(max_length=100)
     limit = models.IntegerField()
     travel_cost = models.IntegerField()
 
 
 class Driver (models.Model):
+
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE, related_name='DriverProfile')
     card_owner= models.CharField(max_length=100, default=None, null=True, blank=True)
     car = models.OneToOneField(Car, on_delete=models.CASCADE, null=True, blank=True)

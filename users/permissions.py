@@ -5,8 +5,7 @@ from rest_framework.permissions import BasePermission
 
 #models_module
 from django.contrib.auth.models import User
-from users.models import Profile
-
+from users.models import Profile, Passenger, Driver
 from notifications.models import Notification
 
 class IsOwnProfile(BasePermission):
@@ -26,22 +25,23 @@ class IsOwnProfile(BasePermission):
 class IsDriver(BasePermission):
     '''check if is driver'''
     def has_object_permission(self, request, view, obj):
-        profile = request.user.profile
+        
         try:
-            driver = Driver.objects.get(profile=profile)
+            driver = Driver.objects.get(profile=request.user.profile)
             return True
         except Driver.DoesNotExist:
             return False
 
         
 class IsPassenger(BasePermission):
-    '''check if is driver'''
+    '''check if is passenger'''
     def has_object_permission(self, request, view, obj):
         profile = request.user.profile
         try:
             passenger = Passenger.objects.get(profile=profile)
+
             return True
-        except Passenger.DoesNotExist:
+        except Passenger.IsNotFound:
             return False
 
 class NotificationOwnerPermission(BasePermission):
@@ -59,4 +59,24 @@ class NotificationOwnerPermission(BasePermission):
             if (sendee == profile_id):
                 return True
         except Notification.NotificationOwnerPermission:
+            return False
+
+class HasDriver(BasePermission):
+    '''check if the passenger already has a driver'''
+    def has_object_permission(self, request,view, obj):
+        try:
+            passenger = Passenger.objects.get(profile=request.user.profile)
+            if (passenger.driver == None):
+                return True
+        except Passenger.DoesNotExist():
+            return False
+
+class HasCar(BasePermission):
+
+    def has_object_permission(self, request, *args, **kwargs):
+        driver = Driver.objects.get(profile=request.user.profile)
+        try:
+            if driver != None:
+                return True
+        except:
             return False

@@ -8,8 +8,9 @@ from django.conf.urls.static import static
 from users.views.login import UserLoginAPIView as login 
 from users.views import users
 from notifications.views import notifications
-from users.views.users import ProfileCompletionViewSet, DriverPassengersViewSet, PassengerDriver
+from users.views.users import ProfileCompletionViewSet, DriverPassengersViewSet, PassengerDriver, CarViewSet, PaymentViewSet
 from notifications.views.notifications import RequestNotificationViewSet
+
 #Rest_framework 
 from rest_framework.routers import DefaultRouter
 
@@ -22,6 +23,10 @@ router.register(r'requests', RequestNotificationViewSet, basename='requests')
 router.register(r'driver/passengers', DriverPassengersViewSet, basename='driver_passengers')
 
 router.register(r'passenger/driver', PassengerDriver, basename='pasenger_driver')
+
+router.register(r'driver/car', CarViewSet, basename='car')
+
+router.register(r'driver/payment', PaymentViewSet, basename='payment')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
