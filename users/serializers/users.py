@@ -75,11 +75,47 @@ class PassengerSerializer(serializers.ModelSerializer):
         fields=['profile','driver']
 
 class DriverSerializer(serializers.ModelSerializer):
-    
-    profile = UserSerializer()
+    #Fer testing
+    profile = ProfileSerializer()
 
     class Meta:
         model = Driver
-        fields=['profile']
+        fields=['profile', 'id', 'card_owner', 'car','card_number', 'exp_date', 'ccv']
 
+#Fer testing
+class DriverCompleteSerializer (serializers.ModelSerializer):
+
+    #driver = DriverSerializer()
+
+    class Meta:
+        model = Driver
+        fields = ['profile', 'id', 'card_owner', 'car','card_number', 'exp_date', 'ccv']
+
+    def update(self, instance, validated_data):
+
+        vcard_owner = validated_data.get('card_owner', instance.card_owner)
+
+        #instance.car = validated_data.get('car', instance.car)
+
+        vcard_number = validated_data.get('card_number', instance.card_number)
+
+        vexp_date = validated_data.get('exp_date', instance.exp_date)
+
+        vccv = validated_data.get('ccv', instance.ccv)
+
+        if vcard_owner != None and vcard_owner != "":
+            instance.card_owner = vcard_owner
+
+        if vcard_number != None and vcard_number != "":
+            instance.card_number = vcard_number
+
+        if vexp_date != None and vexp_date != "":
+            instance.exp_date = vexp_date
+
+        if vccv != None and vccv != "":
+            instance.ccv = vccv
+
+        instance.save()
+
+        return instance
 

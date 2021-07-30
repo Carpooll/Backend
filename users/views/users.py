@@ -11,11 +11,11 @@ from users.models import Profile, Passenger, Driver
 from users.serializers.is_passenger import IsPassenger
 #from users.serializers.users import NewUserSerializer
 from users.serializers.signup import UserSignupSerializer
-from users.serializers.users import UserSerializer, PassengerSerializer, DriverSerializer
+from users.serializers.users import UserSerializer, PassengerSerializer, DriverSerializer, DriverCompleteSerializer
 from users.serializers.verified import UserVerifiedSerializer
 
 #permissions
-from users.permissions import IsOwnProfile, IsDriver, IsPassenger
+from users.permissions import IsOwnProfile, IsDriver, IsPassenger, IsOwnProfileDriver
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -107,3 +107,10 @@ class ProfileEditViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes=[]
+
+
+#Funciona pero con ID de driver
+class ProfileDriverCompletionViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    queryset = Driver.objects.all()
+    serializer_class = DriverCompleteSerializer
+    permission_classes=[IsOwnProfileDriver]
