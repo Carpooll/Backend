@@ -43,7 +43,6 @@ class Car(models.Model):
     limit = models.IntegerField()
     travel_cost = models.IntegerField()
 
-
 class Driver (models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
     card_owner= models.CharField(max_length=100, default=None, null=True, blank=True)

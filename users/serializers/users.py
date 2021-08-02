@@ -10,21 +10,31 @@ from users.models import Profile, Passenger, Driver
         model = User
         fields=['id'] """
 
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['phone','balance', 'street', 'suburb', 'postal_code', 'internal_number', 'external_number', 'coordinate_x', 'coordinate_y']
+
 class PassengerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Passenger
         fields="__all__"
 
-
 class DriverSerializer(serializers.ModelSerializer):
+
+    profile = ProfileSerializer()
+
     class Meta:
         model = Driver
         fields="__all__"
 
-class ProfileSerializer(serializers.ModelSerializer):
+class DriversPassengersSerialzer(serializers.ModelSerializer):
+
+    profile = ProfileSerializer(source='profile_set')
+
     class Meta:
         model = Profile
-        fields = ['phone','balance', 'street', 'suburb', 'postal_code', 'internal_number', 'external_number', 'coordinate_x', 'coordinate_y']
+        # fields=['username', 'coordinate_x', 'coordinate_y']
 
 class UserSerializer(serializers.ModelSerializer):
 

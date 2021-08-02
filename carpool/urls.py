@@ -10,7 +10,7 @@ from users.views import users
 from notifications.views import notifications
 from users.views.users import ProfileCompletionViewSet
 from notifications.views.notifications import RequestNotificationViewSet
-#Rest_framework 
+#Rest_framework s
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -26,7 +26,7 @@ urlpatterns = [
     path('users/signup/', users.signup, name="signup"),
     path('users/verified/<token>/', users.account_verification, name="verify"),
     path('users/passenger/', users.is_passenger, name="passenger"),
-#lisrring users
+#listing users
     path('passengers/', users.PassengerListView.as_view(), name="passengers"),
     path('drivers/', users.DriverListView.as_view(), name="drivers"),
 #notifications

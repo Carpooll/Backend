@@ -11,7 +11,7 @@ from users.models import Profile, Passenger, Driver
 from users.serializers.is_passenger import IsPassenger
 #from users.serializers.users import NewUserSerializer
 from users.serializers.signup import UserSignupSerializer
-from users.serializers.users import UserSerializer, PassengerSerializer, DriverSerializer
+from users.serializers.users import UserSerializer, PassengerSerializer, DriverSerializer, DriversPassengersSerialzer
 from users.serializers.verified import UserVerifiedSerializer
 
 #permissions
@@ -56,9 +56,13 @@ class PassengerListView(ListAPIView):
     pagination_class = PageNumberPagination
 
 class DriverListView(ListAPIView):
-    '''list all users'''
-    queryset = Driver.objects.all()
-    serializer_class = DriverSerializer
+    '''list driver's passengers'''
+
+    # def get(request, *args, **kwargs):
+    #     driverId = request.user.profile.id
+
+    queryset = Profile.objects.all()
+    serializer_class = DriversPassengersSerialzer
     permission_classes = [IsAuthenticated]
     pagination_class = PageNumberPagination
 
