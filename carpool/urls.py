@@ -10,8 +10,8 @@ from users.views import users
 from notifications.views import notifications
 from users.views.users import ProfileCompletionViewSet, DriverPassengersViewSet, PassengerDriver, CarViewSet, PaymentViewSet
 from notifications.views.notifications import RequestNotificationViewSet
-
-#Rest_framework 
+from rides.views import createRideViewSet
+#Rest_frameworks
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -27,6 +27,7 @@ router.register(r'passenger/driver', PassengerDriver, basename='pasenger_driver'
 router.register(r'driver/car', CarViewSet, basename='car')
 
 router.register(r'driver/payment', PaymentViewSet, basename='payment')
+router.register(r'rides', createRideViewSet, basename='rides')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,7 +36,7 @@ urlpatterns = [
     path('users/signup/', users.signup, name="signup"),
     path('users/verified/<token>/', users.account_verification, name="verify"),
     path('users/passenger/', users.is_passenger, name="passenger"),
-#lisrring users
+#listing users
     path('passengers/', users.PassengerListView.as_view(), name="passengers"),
     path('drivers/', users.DriverListView.as_view(), name="drivers"),
 #notifications

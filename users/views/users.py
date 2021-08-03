@@ -55,9 +55,13 @@ class PassengerListView(ListAPIView):
     pagination_class = PageNumberPagination
 
 class DriverListView(ListAPIView):
-    '''list all users'''
-    queryset = Driver.objects.all()
-    serializer_class = DriverSerializer
+    '''list driver's passengers'''
+
+    # def get(request, *args, **kwargs):
+    #     driverId = request.user.profile.id
+
+    queryset = Profile.objects.all()
+    serializer_class = Driver
     permission_classes = [IsAuthenticated]
     pagination_class = PageNumberPagination
 
