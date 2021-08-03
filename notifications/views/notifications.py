@@ -53,7 +53,7 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
             'sendee' : info['sendee'],
             'sender' : profile_id
         }
-        return Response(data, status=status.HTTP_201_CREATED, headers=headers)\
+        return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
