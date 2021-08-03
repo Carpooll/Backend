@@ -8,7 +8,7 @@ from rest_framework.pagination import PageNumberPagination
 #models
 from rides.models import Ride
 from users.models import Driver, Passenger
-from notifications.models import Ride as RideNotification
+from notifications.models import RideNotification
 #serializers
 from rides.serializers import RideSerializer
 from notifications.serializers.notifications import NotificationSerializer
@@ -18,7 +18,7 @@ from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 class createRideViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.ListModelMixin):
 
-    def sendNotifications(self, driver_id, cost):
+    def sendNotifications(self, driver_id, cost, ride_id):
 
         passengers = Passenger.objects.filter(driver=driver_id) # Saves all passengers
 
@@ -34,7 +34,7 @@ class createRideViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins
             serializer.is_valid(raise_exception=True)
             notification = serializer.save()
 
-            # rideNotification = RideNotification.objects.create(notification=notification, cost=cost)
+            rideNotification = RideNotification.objects.create(notification=notification, cost=cost)
 
         print(passengers)
 
@@ -50,8 +50,10 @@ class createRideViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins
         }
         serializer = RideSerializer(data=data)
         serializer.is_valid()
+        ride = serializer.save()
+        ride_id = ride.id
         headers = self.get_success_headers(serializer.data)
 
-        self.sendNotifications(driver_id, travel_cost)
+        self.sendNotifications(driver_id, travel_cost, ride_id)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

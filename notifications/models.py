@@ -16,7 +16,9 @@ class Request(models.Model):
 
     status = models.CharField(max_length=8, default='pending')
 
-class Ride(models.Model):
+class RideNotification(models.Model):
+    ride_id = models.IntegerField(null=True, blank=True)
+
     notification = models.OneToOneField(Notification, on_delete=models.CASCADE)
 
     cost = models.IntegerField()

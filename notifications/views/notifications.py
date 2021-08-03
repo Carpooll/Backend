@@ -7,17 +7,56 @@ from rest_framework.pagination import PageNumberPagination
 #models
 from django.contrib.auth.models import User
 from users.models import Profile, Passenger, Driver
-from notifications.models import Request, Notification
+from notifications.models import Request, Notification, RideNotification
+from rides.models import Ride as RideModel
 #serializers
 from notifications.serializers.notifications import NotificationSerializer
 #permissions
 from users.permissions import NotificationOwnerPermission, HasDriver
 from rest_framework.permissions import IsAuthenticated
 
+class RideNotificationViewSet(viewsets.GenericViewSet, mixins.UpdateModelMixin):
+    queryset = Notification.objects.all()
+    serializer_class =  NotificationSerializer
+    permissions = []
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        rideNotification = RideNotification.objects.get(notification = instance)
+        response = request.data['status']
+        rideNotification.status = response
+        rideNotification.save()
+        ''' getting the notification element from the request'''
+        notification = rideNotification.notification
+
+        print(rideNotification.ride_id)
+        travel = RideModel.objects.get(id=rideNotification.ride_id)
+
+        if travel.passenger1 == None:
+            travel.passenger1 = request.user.profile.id
+        elif travel.passenger2 == None:
+            travel.passenger2 = request.user.profile.id
+        elif travel.passenger3 == None:
+            travel.passenger3 = request.user.profile.id
+        elif travel.passenger4 == None:
+            travel.passenger4 = request.user.profile.id
+        elif travel.passenger5 == None:
+            travel.passenger5 = request.user.profile.id
+        elif travel.passenger6 == None:
+            travel.passenger6 = request.user.profile.id
+        travel.save()
+
+        data = {
+            "message" : "Se acepto la solicitud"
+        }
+
+        return Response(data, status=status.HTTP_201_CREATED)
+
 class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
     queryset = Notification.objects.all()
     serializer_class =  NotificationSerializer
     permissions = []
+
     def get_permissions(self):
         permissions = []
         if self.action in ['update', 'partial_update', 'destroy']:
@@ -86,7 +125,7 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
             "message" : "Se acepto la solicitud"
         }
 
-        return Response(data, status=status.HTTP_201_CREATED)\
+        return Response(data, status=status.HTTP_201_CREATED)
 
     def perform_create(self, serializer):
         return serializer.save()
