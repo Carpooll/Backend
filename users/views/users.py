@@ -60,8 +60,8 @@ class DriverListView(ListAPIView):
     # def get(request, *args, **kwargs):
     #     driverId = request.user.profile.id
 
-    queryset = Profile.objects.all()
-    serializer_class = Driver
+    queryset = Driver.objects.all()
+    serializer_class = DriverSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = PageNumberPagination
 
