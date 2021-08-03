@@ -14,8 +14,7 @@ from notifications.serializers.notifications import NotificationSerializer
 from users.permissions import NotificationOwnerPermission, HasDriver
 from rest_framework.permissions import IsAuthenticated
 
-
-class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
+class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
     queryset = Notification.objects.all()
     serializer_class =  NotificationSerializer
     permissions = []
@@ -65,10 +64,10 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
         ''' getting the notification element from the request'''
         notification = requestNotification.notification
 
-        # driver = Profile.objects.get(id = notification.sendee.id)
-        # passenger = Profile.objects.get(id  = notification.sender.id)
-        # print(driver.id)
-        # print(passenger.id)
+        driver = Profile.objects.get(id = notification.sendee.id)
+        passenger = Profile.objects.get(id  = notification.sender.id)
+        print(driver.id)
+        print(passenger.id)
 
         if requestNotification.status == 'accept': 
 
