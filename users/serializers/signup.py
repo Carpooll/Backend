@@ -66,7 +66,7 @@ class UserSignupSerializer(serializers.Serializer):
             email=data['email']
         )
         profile = Profile(user=user)
-        profile.save()
+        profile.save()  
         is_driver = int(data['is_driver'])
         if(is_driver == 1):
             driver = Driver(profile=profile)

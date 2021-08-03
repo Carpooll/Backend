@@ -8,4 +8,4 @@ class Ride (models.Model):
     is_active = models.BooleanField(default=True) 
     driver = models.ForeignKey(Driver, on_delete=models.RESTRICT, null=True, default=None)
     passengers = models.ForeignKey(Passenger, on_delete=models.RESTRICT, null=True, default=None)
-    
+        
