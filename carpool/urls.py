@@ -10,7 +10,8 @@ from users.views import users
 from notifications.views import notifications
 from users.views.users import ProfileCompletionViewSet
 from notifications.views.notifications import RequestNotificationViewSet
-#Rest_framework s
+from rides.views import createRideViewSet
+#Rest_frameworks
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -18,6 +19,8 @@ router = DefaultRouter()
 router.register(r'profile', ProfileCompletionViewSet, basename='profile')
 
 router.register(r'requests', RequestNotificationViewSet, basename='requests')
+
+router.register(r'rides', createRideViewSet, basename='rides')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
