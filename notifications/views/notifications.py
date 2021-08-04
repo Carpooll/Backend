@@ -31,26 +31,34 @@ class RideNotificationViewSet(viewsets.GenericViewSet, mixins.UpdateModelMixin):
 
         print(rideNotification.ride_id)
         travel = RideModel.objects.get(id=rideNotification.ride_id)
+        if travel.is_active:
+            if travel.passenger1 == None:
+                travel.passenger1 = request.user.profile.id
+            elif travel.passenger2 == None:
+                travel.passenger2 = request.user.profile.id
+            elif travel.passenger3 == None:
+                travel.passenger3 = request.user.profile.id
+            elif travel.passenger4 == None:
+                travel.passenger4 = request.user.profile.id
+            elif travel.passenger5 == None:
+                travel.passenger5 = request.user.profile.id
+            elif travel.passenger6 == None:
+                travel.passenger6 = request.user.profile.id
+            travel.save()
 
-        if travel.passenger1 == None:
-            travel.passenger1 = request.user.profile.id
-        elif travel.passenger2 == None:
-            travel.passenger2 = request.user.profile.id
-        elif travel.passenger3 == None:
-            travel.passenger3 = request.user.profile.id
-        elif travel.passenger4 == None:
-            travel.passenger4 = request.user.profile.id
-        elif travel.passenger5 == None:
-            travel.passenger5 = request.user.profile.id
-        elif travel.passenger6 == None:
-            travel.passenger6 = request.user.profile.id
-        travel.save()
+            data = {
+                "message" : "Se acepto la solicitud"
+            }
 
-        data = {
-            "message" : "Se acepto la solicitud"
-        }
+            return Response(data, status=status.HTTP_201_CREATED)
+        else:
+            data = {
+                "message" : "Este viaje ya no esta disponible"
+            }
 
-        return Response(data, status=status.HTTP_201_CREATED)
+            return Response(data, status=status.HTTP_403_FORBIDDEN)
+            
+
 
 class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
     queryset = Notification.objects.all()
