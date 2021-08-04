@@ -37,11 +37,11 @@ class Car(models.Model):
         ('5', 'Orange'),
         ('6', 'Blue'),
     )
-    color = models.CharField(max_length=1, choices=Colors)
-    plates = models.CharField(max_length=10)
-    insurance = models.CharField(max_length=100)
-    limit = models.IntegerField()
-    travel_cost = models.IntegerField()
+    color = models.CharField(max_length=1, choices=Colors,  blank=True, null=True)
+    plates = models.CharField(max_length=10, blank=True, null=True)
+    insurance = models.CharField(max_length=100,  blank=True, null=True)
+    limit = models.IntegerField(blank=True, null=True)
+    travel_cost = models.IntegerField(blank=True, null=True)
 
 class Driver (models.Model):
 
