@@ -11,7 +11,7 @@ from users.models import Profile, Passenger, Driver, Car
 from users.serializers.is_passenger import IsPassenger
 #from users.serializers.users import NewUserSerializer
 from users.serializers.signup import UserSignupSerializer
-from users.serializers.users import UserSerializer, PassengerSerializer, DriverSerializer, CarSerilizer, DriverPrivSerializer
+from users.serializers.users import UserSerializer, PassengerSerializer, DriverSerializer, CarSerializer, DriverPrivSerializer
 from users.serializers.verified import UserVerifiedSerializer
 
 #permissions
@@ -46,6 +46,29 @@ def is_passenger(request):
         serializer = IsPassenger(data=request.data)
         serializer.create(data=request.data)
         return Response(request.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def available_drivers(request):
+    if request.method == 'GET':
+        data = Driver.objects.all()
+        print(data)
+        drivers = []
+        for driver in data:
+            if driver.car.limit>0:
+
+                drivers.append({
+                    "username" : driver.profile.id,
+                    "First_name" : driver.profile.user.first_name,
+                    "Last_name" : driver.profile.user.last_name,
+                    "Travel_cost" : driver.car.travel_cost,
+                    "Limit": driver.car.limit,
+                    "Coordinate_x" : driver.profile.coordinate_x,
+                    "Coordinate_y" : driver.profile.coordinate_y,
+                })
+        print(drivers)
+        # serializer = DriverSerializer(data=drivers)
+        # serializer.is_valid(data=drivers)
+        return Response(drivers, status=status.HTTP_200_OK)
 
 class PassengerListView(ListAPIView):
     '''list all users'''
@@ -113,7 +136,7 @@ class ProfileEditViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
 
 class CarViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.UpdateModelMixin):
     queryset = Car.objects.all()
-    serializer_class = CarSerilizer
+    serializer_class = CarSerializer
     permissions = []
     def create(self, request, *args, **kwargs):
         
