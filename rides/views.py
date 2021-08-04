@@ -16,7 +16,8 @@ from notifications.serializers.notifications import NotificationSerializer
 from rest_framework.permissions import IsAuthenticated
 
 # Create your views here
-class createRideViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.ListModelMixin):
+class createRideViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin):
+    queryset = Ride.objects.all()
 
     def sendNotifications(self, driver_id, cost, ride_id):
 
@@ -56,3 +57,14 @@ class createRideViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins
         self.sendNotifications(driver_id, travel_cost, ride_id)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_active = False
+        instance.save()
+
+        data = {
+            "message" : "El viaje ha terminado"
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
