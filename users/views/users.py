@@ -11,8 +11,9 @@ from users.models import Profile, Passenger, Driver, Car
 from users.serializers.is_passenger import IsPassenger
 #from users.serializers.users import NewUserSerializer
 from users.serializers.signup import UserSignupSerializer
-from users.serializers.users import UserSerializer, PassengerSerializer, DriverSerializer, CarSerializer, DriverPrivSerializer
+from users.serializers.users import UserSerializer, PassengerSerializer, DriverSerializer, CarSerializer, DriverPrivSerializer, EditProfileSerializer
 from users.serializers.verified import UserVerifiedSerializer
+
 
 #permissions
 from users.permissions import IsOwnProfile, IsDriver, IsPassenger, HasCar
@@ -126,7 +127,7 @@ class PassengerDriver(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
 
 class ProfileCompletionViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = EditProfileSerializer
     permission_classes=[IsOwnProfile]
 
 class ProfileEditViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
