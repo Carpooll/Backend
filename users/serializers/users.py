@@ -107,7 +107,7 @@ class DriverPrivSerializer(serializers.ModelSerializer):
         return instance
 
 
-class CarSerilizer(serializers.ModelSerializer):
+class CarSerializer(serializers.ModelSerializer):
 
     """ driver = DriverSerializer() """
 
@@ -120,8 +120,8 @@ class CarSerilizer(serializers.ModelSerializer):
         instance.model = validated_data.get('model', instance.model)
         instance.color = validated_data.get('color', instance.color)
         instance.plates = validated_data.get('plates', instance.plates)
+        instance.travel_cost = validated_data.get('travel_cost', instance.travel_cost)
         instance.insurance = validated_data.get('insurance', instance.insurance)
         instance.limit = validated_data.get('limit', instance.limit)
-        instance.travel_cost = validated_data.get('travel_cost', instance.travel_cost)
         instance.save()
         return instance

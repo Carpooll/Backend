@@ -113,19 +113,19 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
 
         driver = Profile.objects.get(id = notification.sendee.id)
         passenger = Profile.objects.get(id  = notification.sender.id)
-        print(driver.id)
-        print(passenger.id)
 
         if requestNotification.status == 'accept': 
 
             passenger = Profile.objects.get(id = notification.sender.id)
             passenger = Passenger.objects.get(profile=passenger)
             driver = Profile.objects.get(id = notification.sendee.id)
-            print("to bn")
+            _driver = Driver.objects.get(profile=driver)
+            _driver.car.limit = _driver.car.limit - 1
+            _driver.car.save()
             passenger.driver = driver
             passenger.save()
-        
-        notification.sendee = Profile.objects.get(id  = notification.sender.id)
+
+        notification.sendee = Profile.objects.get(id = notification.sender.id)
         notification.sender = Profile.objects.get(id = notification.sendee.id)
         notification.save()
 

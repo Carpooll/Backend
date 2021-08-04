@@ -9,7 +9,7 @@ from users.models import Profile, Passenger, Driver
 from notifications.models import Notification
 
 class IsOwnProfile(BasePermission):
-    '''check if is owner'''
+    '''checks if is owner'''
     def has_object_permission(self, request, view, obj):
         path = request.path.split('/')
         user_id = int(path[2])
@@ -23,7 +23,7 @@ class IsOwnProfile(BasePermission):
             return False
 
 class IsDriver(BasePermission):
-    '''check if is driver'''
+    '''checks if is driver'''
     def has_object_permission(self, request, view, obj):
         
         try:
@@ -34,7 +34,7 @@ class IsDriver(BasePermission):
 
         
 class IsPassenger(BasePermission):
-    '''check if is passenger'''
+    '''checks if is passenger'''
     def has_object_permission(self, request, view, obj):
         profile = request.user.profile
         try:
@@ -45,7 +45,7 @@ class IsPassenger(BasePermission):
             return False
 
 class NotificationOwnerPermission(BasePermission):
-    '''check if is owner of the notification'''
+    '''checks if is owner of the notification'''
     def has_object_permission(self, request,view, obj):
         path = request.path.split('/')
         notification_id = int(path[2])
@@ -62,7 +62,7 @@ class NotificationOwnerPermission(BasePermission):
             return False
 
 class HasDriver(BasePermission):
-    '''check if the passenger already has a driver'''
+    '''checks if the passenger already has a driver'''
     def has_object_permission(self, request,view, obj):
         try:
             passenger = Passenger.objects.get(profile=request.user.profile)
