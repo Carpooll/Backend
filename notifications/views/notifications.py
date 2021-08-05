@@ -79,6 +79,21 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
         user_id = int(request.user.id)
         user = User.objects.get(id = user_id)
         profile = Profile.objects.get(user = user)
+
+        try:
+            passenger=Passenger.objects.get(profile=request.user.profile)
+            driver_id=passenger.driver
+            print('_______________________0')
+            print(driver_id)
+            print('0_______________________')
+            if driver_id.id != None:
+                data = {
+                    "message": "Usted ya tiene un conductor"
+                }
+                return Response(data=data, status=status.HTTP_403_FORBIDDEN)
+        except:
+            pass
+
         profile_id = profile.id
         info = request.data
         data = {
@@ -87,6 +102,27 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
             'sendee':info['sendee'],
             'sender':profile_id
         }
+    
+        flag= False
+        passenger=Profile.objects.get(id=profile_id)
+        driver=Profile.objects.get(id=info["sendee"])
+        try:
+            notifications=Notification.objects.filter(sender=passenger, sendee=driver)
+        
+            for notification in notifications:
+                try:
+                    request=Request.objects.get(notification=notification)
+                    data = {
+                        "message": "Usted ya envio una solicitud a este conductor"
+                            }
+                    return Response(data=data, status=status.HTTP_403_FORBIDDEN)
+
+                except:
+                    pass
+        except:
+            pass
+       
+
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         notification = self.perform_create(serializer)

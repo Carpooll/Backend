@@ -5,13 +5,11 @@ from django.contrib.auth.models import User
 from users.models import Profile, Passenger, Driver, Car
 
 class SimpleUserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ['username','first_name','last_name']
 
 class ProfileSerializer(serializers.ModelSerializer):
-    
     class Meta:
         model = Profile
         fields = ['id','phone','balance', 'street', 'suburb', 'postal_code', 'internal_number', 'external_number', 'coordinate_x', 'coordinate_y']
@@ -114,9 +112,15 @@ class UserSerializer(serializers.ModelSerializer):
 
         return instance
 
-class PassengerSerializer(serializers.ModelSerializer):
+class ProfileSerializerPlus(serializers.ModelSerializer):
+    user = UserSerializer()
+    class Meta:
+        model = Profile
+        fields = ['id','user','phone','balance', 'street', 'suburb', 'postal_code', 'internal_number', 'external_number', 'coordinate_x', 'coordinate_y']
 
-    profile = ProfileSerializer()
+
+class PassengerSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializerPlus()
 
     class Meta:
         model = Passenger
@@ -124,8 +128,7 @@ class PassengerSerializer(serializers.ModelSerializer):
 
 class DriverSerializer(serializers.ModelSerializer):
     
-    profile = ProfileSerializer()
-
+    profile = ProfileSerializerPlus()
     class Meta:
         model = Driver
         fields=['profile']
