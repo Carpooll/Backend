@@ -157,4 +157,4 @@ cython_debug/
 .env
 */migrations/
 /venv
-settings.py
+/settings.py
