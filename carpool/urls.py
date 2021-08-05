@@ -9,7 +9,7 @@ from users.views.login import UserLoginAPIView as login
 from users.views import users
 from notifications.views import notifications
 from users.views.users import ProfileCompletionViewSet, DriverPassengersViewSet, PassengerDriver, CarViewSet, PaymentViewSet
-from notifications.views.notifications import RequestNotificationViewSet
+from notifications.views.notifications import RequestNotificationViewSet, RideNotificationViewSet
 from rides.views import createRideViewSet
 #Rest_frameworks
 from rest_framework.routers import DefaultRouter
@@ -27,7 +27,10 @@ router.register(r'passenger/driver', PassengerDriver, basename='pasenger_driver'
 router.register(r'driver/car', CarViewSet, basename='car')
 
 router.register(r'driver/payment', PaymentViewSet, basename='payment')
+
 router.register(r'rides', createRideViewSet, basename='rides')
+
+router.register(r'rides/confirmation', RideNotificationViewSet, basename='ride_confirmation')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -39,8 +42,9 @@ urlpatterns = [
 #listing users
     path('passengers/', users.PassengerListView.as_view(), name="passengers"),
     path('drivers/', users.DriverListView.as_view(), name="drivers"),
+    path('drivers/available/', users.available_drivers, name="available drivers"),
 #notifications
     path('RequestDriver/', notifications.RequestDriver, name="request driver"),
-
+    
     path('',include(router.urls))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
