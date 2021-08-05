@@ -136,10 +136,18 @@ class ProfileEditViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     serializer_class = UserSerializer
     permission_classes=[]
 
-class CarViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.UpdateModelMixin):
+class CarViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin):
     queryset = Car.objects.all()
     serializer_class = CarSerializer
     permissions = []
+    def retrieve(self, request, *args, **kwargs):
+        driver_id = request.path.split('/')
+        driver_id = driver_id[3]
+        print(driver_id)
+        instance = Car.objects.get(driver=Driver.objects.get(profile=Profile.objects.get(id=driver_id)))
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
     def create(self, request, *args, **kwargs):
         
         driver = Driver.objects.get(profile=request.user.profile)
