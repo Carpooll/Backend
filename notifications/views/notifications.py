@@ -79,6 +79,18 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
         user_id = int(request.user.id)
         user = User.objects.get(id = user_id)
         profile = Profile.objects.get(user = user)
+
+        try:
+            passenger=Passenger.objects.get(profile=profile)
+            driver_id=passenger.driver
+            if driver_id.id == None:
+                pass
+        except:
+            data = {
+                "message": "Usted ya tiene un conductor"
+            }
+            return Response(data=data, status=status.HTTP_403_FORBIDDEN)
+
         profile_id = profile.id
         info = request.data
         data = {
