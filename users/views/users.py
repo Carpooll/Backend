@@ -58,7 +58,8 @@ def available_drivers(request):
             if driver.car.limit>0:
 
                 drivers.append({
-                    "username" : driver.profile.id,
+                    "profile_id" : driver.profile.id,
+                    "phone": driver.profile.phone,
                     "First_name" : driver.profile.user.first_name,
                     "Last_name" : driver.profile.user.last_name,
                     "Travel_cost" : driver.car.travel_cost,
