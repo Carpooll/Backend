@@ -3,9 +3,8 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from users.serializers.login import UserLoginSerializer
-from users.serializers.users import UserSerializer
+from users.serializers.users import UserSerializer, ProfileSerializer
 from users.models import Driver, Passenger
-
 
 class UserLoginAPIView(APIView):
 
@@ -20,9 +19,10 @@ class UserLoginAPIView(APIView):
             flag = True
         except:
             flag= False
-
+        profile= Profile.objects.get(user=user)
         data = {
             'user': UserSerializer(user).data,
+            'profile': ProfileSerializer(profile).data,
             'driver': flag,
             'token': token
         }
