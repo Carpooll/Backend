@@ -11,7 +11,7 @@ from rest_framework.validators import UniqueValidator
 from rest_framework.authtoken.models import Token
 #models
 from django.contrib.auth.models import User
-from users.models import Profile, Passenger, Driver
+from users.models import Profile, Passenger, Driver, Car
 #utilities
 import jwt
 from datetime import timedelta
@@ -70,6 +70,11 @@ class UserSignupSerializer(serializers.Serializer):
         is_driver = int(data['is_driver'])
         if(is_driver == 1):
             driver = Driver(profile=profile)
+
+            car = Car.objects.create()
+            car.save()
+            
+            driver.car = car
             driver.save()
         else:
             passenger = Passenger(profile=profile)
