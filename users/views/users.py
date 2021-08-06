@@ -13,7 +13,8 @@ from users.serializers.is_passenger import IsPassenger
 from users.serializers.signup import UserSignupSerializer
 from users.serializers.users import UserSerializer, PassengerSerializer, DriverSerializer, CarSerializer, DriverPrivSerializer, EditProfileSerializer
 from users.serializers.verified import UserVerifiedSerializer
-
+#la formula secreta de la cangreburger
+from users.views.formule import get_distance
 
 #permissions
 from users.permissions import IsOwnProfile, IsDriver, IsPassenger, HasCar
@@ -51,21 +52,27 @@ def is_passenger(request):
 @api_view(['GET'])
 def available_drivers(request):
     if request.method == 'GET':
+        passenger = request.user.profile
+        p_lat = passenger.coordinate_x
+        p_lon = passenger.coordinate_y
+        lim_p = passenger._range
         data = Driver.objects.all()
         print(data)
         drivers = []
         for driver in data:
             if driver.car.limit>0:
-
-                drivers.append({
-                    "username" : driver.profile.id,
-                    "First_name" : driver.profile.user.first_name,
-                    "Last_name" : driver.profile.user.last_name,
-                    "Travel_cost" : driver.car.travel_cost,
-                    "Limit": driver.car.limit,
-                    "Coordinate_x" : driver.profile.coordinate_x,
-                    "Coordinate_y" : driver.profile.coordinate_y,
-                })
+                
+                distance = get_distance(p_lat, p_lon, driver.profile.coordinate_x, driver.profile.coordinate_y, lim_p, driver.profile._range)
+                if(distance != False):
+                     drivers.append({
+                        "profile_id" : driver.profile.id,
+                        "phone": driver.profile.phone,
+                        "first_name" : driver.profile.user.first_name,
+                        "last_name" : driver.profile.user.last_name,
+                        "travel_cost" : driver.car.travel_cost,
+                        "limit": driver.car.limit,
+                        "distance":distance
+                    })
         print(drivers)
         # serializer = DriverSerializer(data=drivers)
         # serializer.is_valid(data=drivers)
@@ -130,15 +137,18 @@ class ProfileCompletionViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet)
     serializer_class = EditProfileSerializer
     permission_classes=[IsOwnProfile]
 
-class ProfileEditViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes=[]
-
-class CarViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.UpdateModelMixin):
+class CarViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin):
     queryset = Car.objects.all()
     serializer_class = CarSerializer
     permissions = []
+    def retrieve(self, request, *args, **kwargs):
+        driver_id = request.path.split('/')
+        driver_id = driver_id[3]
+        print(driver_id)
+        instance = Car.objects.get(driver=Driver.objects.get(profile=Profile.objects.get(id=driver_id)))
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
     def create(self, request, *args, **kwargs):
         
         driver = Driver.objects.get(profile=request.user.profile)

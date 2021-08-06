@@ -154,6 +154,6 @@ cython_debug/
 
 /entorno
 /.vscode
-.env
 */migrations/
 /venv
+carpool/settings.py

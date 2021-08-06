@@ -12,14 +12,14 @@ class SimpleUserSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ['id','phone','balance', 'street', 'suburb', 'postal_code', 'internal_number', 'external_number', 'coordinate_x', 'coordinate_y']
+        fields = ['id','phone','balance', 'street', 'suburb', 'postal_code', 'internal_number', 'external_number', 'coordinate_x', 'coordinate_y', '_range']
 
 class EditProfileSerializer(serializers.ModelSerializer):
     
     profile = ProfileSerializer()
     class Meta:
         model = User
-        fields = ['username','first_name','last_name', 'profile']
+        fields = ['username','email','first_name','last_name', 'profile']
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile')
@@ -58,6 +58,10 @@ class EditProfileSerializer(serializers.ModelSerializer):
 
         if (profile_data.get('coordinate_x', profile.coordinate_x) != None):
             profile.coordinate_x = profile_data.get('coordinate_x', profile.coordinate_x)
+        
+        if (profile_data.get('_range', profile._range) != None):
+            profile._range = profile_data.get('_range', profile._range)
+        print(profile_data.get('_range', profile._range))
 
         profile.save()
 
@@ -108,6 +112,9 @@ class UserSerializer(serializers.ModelSerializer):
         if (profile_data.get('coordinate_x', profile.coordinate_x) != None):
             profile.coordinate_x = profile_data.get('coordinate_x', profile.coordinate_x)
 
+        if (profile_data.get('_range', profile._range) != None):
+            profile._range = profile_data.get('_range', profile._range)
+
         profile.save()
 
         return instance
@@ -116,7 +123,7 @@ class ProfileSerializerPlus(serializers.ModelSerializer):
     user = UserSerializer()
     class Meta:
         model = Profile
-        fields = ['id','user','phone','balance', 'street', 'suburb', 'postal_code', 'internal_number', 'external_number', 'coordinate_x', 'coordinate_y']
+        fields = ['id','user','phone','balance', 'street', 'suburb', 'postal_code', 'internal_number', 'external_number', 'coordinate_x', 'coordinate_y', '_range']
 
 
 class PassengerSerializer(serializers.ModelSerializer):
