@@ -19,6 +19,7 @@ class Profile (models.Model):
     external_number = models.IntegerField(default=None, null=True, blank=True)
     coordinate_x = models.FloatField(default=None, null=True, blank=True)
     coordinate_y = models.FloatField(default=None, null=True, blank=True)
+    _range = models.IntegerField(default=0)
 
     is_verify = models.BooleanField(default=False)
     class Meta:
@@ -42,6 +43,7 @@ class Car(models.Model):
     insurance = models.CharField(max_length=100,  blank=True, null=True)
     limit = models.IntegerField(blank=True, null=True)
     travel_cost = models.IntegerField(blank=True, null=True)
+
 
 class Driver (models.Model):
 
