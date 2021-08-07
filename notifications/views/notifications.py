@@ -64,16 +64,17 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
     queryset = Notification.objects.all()
     serializer_class =  NotificationSerializer
     permissions = []
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(Notification.objects.filter(sendee = request.user.profile.id))
 
-    def get_permissions(self):
-        permissions = []
-        if self.action in ['update', 'partial_update', 'destroy']:
-            permissions.append(NotificationOwnerPermission)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
-        if self.action in ['create']:
-            permissions.append(HasDriver)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
-        return [permission() for permission in permissions]
 
     def create(self, request, *args, **kwargs):
         user_id = int(request.user.id)
@@ -83,9 +84,6 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
         try:
             passenger=Passenger.objects.get(profile=request.user.profile)
             driver_id=passenger.driver
-            print('_______________________0')
-            print(driver_id)
-            print('0_______________________')
             if driver_id.id != None:
                 data = {
                     "message": "Usted ya tiene un conductor"
@@ -103,7 +101,7 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
             'sender':profile_id
         }
     
-        flag= False
+        flag = False
         passenger=Profile.objects.get(id=profile_id)
         driver=Profile.objects.get(id=info["sendee"])
         try:
