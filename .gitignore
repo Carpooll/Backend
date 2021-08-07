@@ -158,3 +158,4 @@ cython_debug/
 /venv
 */settings.py
  carpool/*settings.py
+ /carpool/*settings.py
