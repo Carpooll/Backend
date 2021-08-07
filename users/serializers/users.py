@@ -167,8 +167,6 @@ class DriverPrivSerializer(serializers.ModelSerializer):
 
 class CarSerializer(serializers.ModelSerializer):
 
-    """ driver = DriverSerializer() """
-
     class Meta:
         model=Car
         fields=['model', 'color', 'plates', 'insurance', 'limit', 'travel_cost']

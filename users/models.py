@@ -30,18 +30,10 @@ class Profile (models.Model):
 
 class Car(models.Model):
     model = models.CharField(max_length=100, blank=True, null=True)
-    Colors = (
-        ('1', 'Red'),
-        ('2', 'Black'),
-        ('3', 'Black'),
-        ('4', 'Yellow'),
-        ('5', 'Orange'),
-        ('6', 'Blue'),
-    )
-    color = models.CharField(max_length=1, choices=Colors,  blank=True, null=True)
+    color = models.CharField(max_length=20, blank=True, null=True)
     plates = models.CharField(max_length=10, blank=True, null=True)
     insurance = models.CharField(max_length=100,  blank=True, null=True)
-    limit = models.IntegerField(blank=True, null=True)
+    limit = models.IntegerField(blank=True, null=True, default = 0)
     travel_cost = models.IntegerField(blank=True, null=True)
 
 
