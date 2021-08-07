@@ -151,7 +151,6 @@ class ProfileCompletionViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet,
         id = request.path.split('/')
         id = id[2] 
         instance = User.objects.get(profile=Profile.objects.get(id=id)) 
-        instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
