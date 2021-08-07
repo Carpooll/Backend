@@ -135,11 +135,13 @@ class PassengerDriver(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
 class ProfileCompletionViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     queryset = User.objects.all()
     serializer_class = EditProfileSerializer
-    permission_classes=[IsOwnProfile]
+    permission_classes=[]
 
     def update(self, request, *args, **kwargs):
         id = request.path.split('/')
-        id = id[2]
+        id = int(id[2])
+        if id != request.user.profile.id:
+            return Response('you dont have permission to update this profile', status = status.HTTP_403_FORBIDDEN)
         partial = kwargs.pop('partial', False)
         instance = User.objects.get(profile=Profile.objects.get(id=id))
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -166,31 +168,6 @@ class CarViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.Update
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
-    def create(self, request, *args, **kwargs):
-        
-        driver = Driver.objects.get(profile=request.user.profile)
-        if(driver.car != None):
-            response = {
-            "error":"car already exists, try update method instead",
-            "id":f"{driver.car.id}"
-            }
-            return Response(response, status=status.HTTP_403_FORBIDDEN)
-        car = Car.objects.create(
-            color = request.data['color'],
-            model = request.data['model'],
-            plates = request.data['plates'],
-            insurance = request.data['insurance'],
-            limit = request.data['limit'],
-            travel_cost = request.data['travel_cost'])
-
-        driver.car = car
-        driver.save()
-        response = {
-            "message":"success",
-            "id":f"{car.id}"
-        }
-        return Response(response, status=status.HTTP_201_CREATED)
-        
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = Car.objects.get(driver=Driver.objects.get(profile=request.user.profile))
