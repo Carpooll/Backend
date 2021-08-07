@@ -157,4 +157,4 @@ cython_debug/
 */migrations/
 /venv
 */settings.py
- carpool/*setting.py
+ carpool/*settings.py
