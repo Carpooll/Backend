@@ -15,9 +15,7 @@ class IsOwnProfile(BasePermission):
         user_id = int(path[2])
         
         try:
-            user = User.objects.get(username=request.user.username)
-            print(user)
-            if request.user.id == user_id:
+            if request.user.profile.id == user_id:
                 return True
         except user.DoesNotExist:
             return False
