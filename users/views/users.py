@@ -137,6 +137,18 @@ class ProfileCompletionViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet)
     serializer_class = EditProfileSerializer
     permission_classes=[IsOwnProfile]
 
+    def update(self, request, *args, **kwargs):
+        id = request.path.split('/')
+        print(id)
+        id = id[2]
+        
+        partial = kwargs.pop('partial', False)
+        instance = User.objects.get(profile=Profile.objects.get(id=id))
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
 class CarViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin):
     queryset = Car.objects.all()
     serializer_class = CarSerializer
