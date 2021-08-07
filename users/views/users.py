@@ -52,28 +52,45 @@ def is_passenger(request):
 @api_view(['GET'])
 def available_drivers(request):
     if request.method == 'GET':
-        passenger = request.user.profile
-        p_lat = passenger.coordinate_x
-        p_lon = passenger.coordinate_y
-        lim_p = passenger._range
+        try:
+            passenger = request.user.profile
+            p_lat = passenger.coordinate_x
+            p_lon = passenger.coordinate_y
+            lim_p = passenger._range
+            print("passenger data succesfully got")
+            print("p_lat:", p_lat, " p_lon:", p_lon, " lim_p:", lim_p)
+        except:
+            message = {
+                'error':'has not enoght data registered'
+            }
+            return Response(message, status=status.HTTP_403_FORBIDDEN)
+
         data = Driver.objects.all()
-        print(data)
+        print('all passengers successfully gotten')
+
         drivers = []
         for driver in data:
-            if driver.car.limit>0:
-                
-                distance = get_distance(p_lat, p_lon, driver.profile.coordinate_x, driver.profile.coordinate_y, lim_p, driver.profile._range)
-                if(distance != False):
-                     drivers.append({
-                        "profile_id" : driver.profile.id,
-                        "phone": driver.profile.phone,
-                        "first_name" : driver.profile.user.first_name,
-                        "last_name" : driver.profile.user.last_name,
-                        "travel_cost" : driver.car.travel_cost,
-                        "limit": driver.car.limit,
-                        "distance":distance
-                    })
-        print(drivers)
+            try:
+                if driver.car.limit>0:
+                    print('driver evaluated with space succesfully')
+                    lim_d = driver.profile._range
+                    d_lat = driver.profile.coordinate_x
+                    d_lon = driver.profile.coordinate_y
+                    if (d_lat != None and d_lon != None and p_lat != None and p_lon != None):
+                        distance = get_distance(p_lat, p_lon, d_lat, d_lon, lim_p, lim_d)
+                        if(distance != False):
+                            drivers.append({
+                                "profile_id" : driver.profile.id,
+                                "phone": driver.profile.phone,
+                                "first_name" : driver.profile.user.first_name,
+                                "last_name" : driver.profile.user.last_name,
+                                "travel_cost" : driver.car.travel_cost,
+                                "limit": driver.car.limit,
+                                "distance":distance
+                            })
+            except:
+                pass
+
         # serializer = DriverSerializer(data=drivers)
         # serializer.is_valid(data=drivers)
         return Response(drivers, status=status.HTTP_200_OK)
