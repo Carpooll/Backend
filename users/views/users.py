@@ -54,10 +54,20 @@ def available_drivers(request):
     if request.method == 'GET':
         try:
             passenger = request.user.profile
+
             p_lat = passenger.coordinate_x
             p_lon = passenger.coordinate_y
             print("passenger data succesfully got")
             print("p_lat:", p_lat, " p_lon:", p_lon)
+            _passenger = Passenger.objects.get(profile = passenger)
+            try:
+                if (_passenger.driver != None):
+                    message = {
+                    'error':'already has a driver'
+                    }
+                return Response(message, status=status.HTTP_403_FORBIDDEN)
+            except:
+                pass
         except:
             message = {
                 'error':'has not enoght data registered'
