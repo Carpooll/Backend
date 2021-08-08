@@ -119,7 +119,7 @@ class PassengerViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixin
             distance = get_distance(profile.coordinate_x, profile.coordinate_y, request.user.profile.coordinate_x, request.user.profile.coordinate_y, 100000)
             data = {
                 'first_name':profile.user.first_name,
-                'last_name':profile.user.first_name,
+                'last_name':profile.user.last_name,
                 'distance':distance
             }
             
