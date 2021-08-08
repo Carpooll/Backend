@@ -137,9 +137,7 @@ class DriverPassengersViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mi
         driver_id = request.user.profile.id
         instance = Profile.objects.get(id=id)
         passenger = Passenger.objects.get(profile=instance)
-        print("-------------")
-        print(passenger.driver.id)
-        print("-------------")
+
         if passenger.driver.id == driver_id:
             passenger.driver = None
             passenger.save()
@@ -152,7 +150,7 @@ class DriverPassengersViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mi
     def perform_destroy(self, instance):
         instance.delete()
 
-class PassengerDriver(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
+class PassengerDriver(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
 
     serializer_class =  DriverSerializer
     permissions = [IsPassenger]
@@ -168,6 +166,13 @@ class PassengerDriver(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
         queryset = self.filter_queryset(Driver.objects.filter(profile=driver))
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data) 
+
+    def destroy(self, request, *args, **kwargs):
+
+        passenger = Passenger.objects.get(profile=request.user.profile)
+        passenger.driver = None
+        passenger.save()
+        return Response(status=status.HTTP_200_OK)
 
 class ProfileCompletionViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     queryset = User.objects.all()
