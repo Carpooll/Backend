@@ -12,7 +12,7 @@ class UserLoginSerializer(serializers.Serializer):
     def validate(self,data):
         user = authenticate(username = data['username'], password=data['password'])
         if not user:
-            raise serializers.ValidationError({status.HTTP_401_UNAUTHORIZED:'Invalid credentials'})
+            raise serializers.ValidationError({status.HTTP_403_FORBIDDEN:'Invalid credentials'})
         if not user.profile.is_verify:
             raise serializers.ValidationError({status.HTTP_401_UNAUTHORIZED:'User not verified'})
         
