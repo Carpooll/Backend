@@ -56,9 +56,8 @@ def available_drivers(request):
             passenger = request.user.profile
             p_lat = passenger.coordinate_x
             p_lon = passenger.coordinate_y
-            lim_p = passenger._range
             print("passenger data succesfully got")
-            print("p_lat:", p_lat, " p_lon:", p_lon, " lim_p:", lim_p)
+            print("p_lat:", p_lat, " p_lon:", p_lon)
         except:
             message = {
                 'error':'has not enoght data registered'
@@ -76,10 +75,10 @@ def available_drivers(request):
                     lim_d = driver.profile._range
                     d_lat = driver.profile.coordinate_x
                     d_lon = driver.profile.coordinate_y
-                    if (d_lat != None and d_lon != None and p_lat != None and p_lon != None):
-                        distance = get_distance(p_lat, p_lon, d_lat, d_lon, lim_p, lim_d)
+                    if (d_lat != None and d_lon != None and p_lat != None and p_lon != None and lim_d != None):
+                        distance = get_distance(p_lat, p_lon, d_lat, d_lon, lim_d)
                         if(distance != False):
-                            drivers.append({
+                            drivers.append([{
                                 "profile_id" : driver.profile.id,
                                 "phone": driver.profile.phone,
                                 "first_name" : driver.profile.user.first_name,
@@ -87,7 +86,7 @@ def available_drivers(request):
                                 "travel_cost" : driver.car.travel_cost,
                                 "limit": driver.car.limit,
                                 "distance":distance
-                            })
+                            }])
             except:
                 pass
 
@@ -121,7 +120,7 @@ class DriverListView(ListAPIView):
     pagination_class = PageNumberPagination
  """
 
-class DriverPassengersViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+class DriverPassengersViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.DestroyModelMixin):
     serializer_class =  PassengerSerializer
     permissions = []
 
@@ -131,6 +130,27 @@ class DriverPassengersViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        url = request.path.split('/')
+        id = url[3]
+        driver_id = request.user.profile.id
+        instance = Profile.objects.get(id=id)
+        passenger = Passenger.objects.get(profile=instance)
+        print("-------------")
+        print(passenger.driver.id)
+        print("-------------")
+        if passenger.driver.id == driver_id:
+            passenger.driver = None
+            passenger.save()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            message = {
+                'error':'this passenger is not linked with you'
+            }
+            return Response(message, status=status.HTTP_400_BAD_REQUEST)
+    def perform_destroy(self, instance):
+        instance.delete()
 
 class PassengerDriver(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
 
