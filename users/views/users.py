@@ -115,8 +115,15 @@ class PassengerViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixin
         print(path)
         try:
             instance = Passenger.objects.get(profile=Profile.objects.get(id=id))
-            serializer = self.get_serializer(instance)
-            return Response(serializer.data)
+            profile = instance.profile
+            distance = get_distance(profile.coordinate_x, profile.coordinate_y, request.user.profile.coordinate_x, request.user.profile.coordinate_y, 100000)
+            data = {
+                'first_name':profile.user.first_name,
+                'last_name':profile.user.first_name,
+                'distance':distance
+            }
+            
+            return Response(data)
         except:
             message = {
                 "message" : "this passenger does not exist",
