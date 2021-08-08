@@ -78,7 +78,7 @@ def available_drivers(request):
                     if (d_lat != None and d_lon != None and p_lat != None and p_lon != None and lim_d != None):
                         distance = get_distance(p_lat, p_lon, d_lat, d_lon, lim_d)
                         if(distance != False):
-                            drivers.append([{
+                            drivers.append({
                                 "profile_id" : driver.profile.id,
                                 "phone": driver.profile.phone,
                                 "first_name" : driver.profile.user.first_name,
@@ -86,7 +86,7 @@ def available_drivers(request):
                                 "travel_cost" : driver.car.travel_cost,
                                 "limit": driver.car.limit,
                                 "distance":distance
-                            }])
+                            })
             except:
                 pass
 
