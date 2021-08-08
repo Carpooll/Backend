@@ -64,16 +64,17 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
     queryset = Notification.objects.all()
     serializer_class =  NotificationSerializer
     permissions = []
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(Notification.objects.filter(sendee = request.user.profile.id))
 
-    def get_permissions(self):
-        permissions = []
-        if self.action in ['update', 'partial_update', 'destroy']:
-            permissions.append(NotificationOwnerPermission)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
-        if self.action in ['create']:
-            permissions.append(HasDriver)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
-        return [permission() for permission in permissions]
 
     def create(self, request, *args, **kwargs):
         user_id = int(request.user.id)
@@ -83,9 +84,6 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
         try:
             passenger=Passenger.objects.get(profile=request.user.profile)
             driver_id=passenger.driver
-            print('_______________________0')
-            print(driver_id)
-            print('0_______________________')
             if driver_id.id != None:
                 data = {
                     "message": "Usted ya tiene un conductor"
@@ -103,7 +101,7 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
             'sender':profile_id
         }
     
-        flag= False
+        flag = False
         passenger=Profile.objects.get(id=profile_id)
         driver=Profile.objects.get(id=info["sendee"])
         try:
@@ -156,18 +154,39 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
             passenger = Passenger.objects.get(profile=passenger)
             driver = Profile.objects.get(id = notification.sendee.id)
             _driver = Driver.objects.get(profile=driver)
+            if _driver.car.limit<1:
+                message = {
+                    "message":"you dont have any available spaces in your car!",
+                }
+                return Response(message, status=status.HTTP_403_FORBIDDEN)
+            
+            if passenger.driver != None:
+                message = {
+                    "message":"This passenger already has a driver",
+                }
+                return Response(message, status=status.HTTP_403_FORBIDDEN)
+            passenger.driver = driver
+            print("simonki")
+            passenger.save()
             _driver.car.limit = _driver.car.limit - 1
             _driver.car.save()
-            passenger.driver = driver
-            passenger.save()
-
-        notification.sendee = Profile.objects.get(id = notification.sender.id)
-        notification.sender = Profile.objects.get(id = notification.sendee.id)
-        notification.save()
-
-        data = {
+            
+            notification.title = "the request was accepted"
+            notification.text = "The driver accepted to give you a ride"
+            data = {
             "message" : "Se acepto la solicitud"
-        }
+            }
+        else:
+            notification.title = "the request was rejected"
+            notification.text = "The driver rejected to give you a ride"
+            data = {
+            "message" : "Se rechazo la solicitud"
+            }
+
+        notification.sendee = Profile.objects.get(id = passenger.profile.id)
+        notification.sender = Profile.objects.get(id = driver.id)
+        
+        notification.save()
 
         return Response(data, status=status.HTTP_201_CREATED)
 

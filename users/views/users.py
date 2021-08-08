@@ -52,28 +52,45 @@ def is_passenger(request):
 @api_view(['GET'])
 def available_drivers(request):
     if request.method == 'GET':
-        passenger = request.user.profile
-        p_lat = passenger.coordinate_x
-        p_lon = passenger.coordinate_y
-        lim_p = passenger._range
+        try:
+            passenger = request.user.profile
+            p_lat = passenger.coordinate_x
+            p_lon = passenger.coordinate_y
+            lim_p = passenger._range
+            print("passenger data succesfully got")
+            print("p_lat:", p_lat, " p_lon:", p_lon, " lim_p:", lim_p)
+        except:
+            message = {
+                'error':'has not enoght data registered'
+            }
+            return Response(message, status=status.HTTP_403_FORBIDDEN)
+
         data = Driver.objects.all()
-        print(data)
+        print('all passengers successfully gotten')
+
         drivers = []
         for driver in data:
-            if driver.car.limit>0:
-                
-                distance = get_distance(p_lat, p_lon, driver.profile.coordinate_x, driver.profile.coordinate_y, lim_p, driver.profile._range)
-                if(distance != False):
-                     drivers.append({
-                        "profile_id" : driver.profile.id,
-                        "phone": driver.profile.phone,
-                        "first_name" : driver.profile.user.first_name,
-                        "last_name" : driver.profile.user.last_name,
-                        "travel_cost" : driver.car.travel_cost,
-                        "limit": driver.car.limit,
-                        "distance":distance
-                    })
-        print(drivers)
+            try:
+                if driver.car.limit>0:
+                    print('driver evaluated with space succesfully')
+                    lim_d = driver.profile._range
+                    d_lat = driver.profile.coordinate_x
+                    d_lon = driver.profile.coordinate_y
+                    if (d_lat != None and d_lon != None and p_lat != None and p_lon != None):
+                        distance = get_distance(p_lat, p_lon, d_lat, d_lon, lim_p, lim_d)
+                        if(distance != False):
+                            drivers.append({
+                                "profile_id" : driver.profile.id,
+                                "phone": driver.profile.phone,
+                                "first_name" : driver.profile.user.first_name,
+                                "last_name" : driver.profile.user.last_name,
+                                "travel_cost" : driver.car.travel_cost,
+                                "limit": driver.car.limit,
+                                "distance":distance
+                            })
+            except:
+                pass
+
         # serializer = DriverSerializer(data=drivers)
         # serializer.is_valid(data=drivers)
         return Response(drivers, status=status.HTTP_200_OK)
@@ -135,11 +152,13 @@ class PassengerDriver(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
 class ProfileCompletionViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     queryset = User.objects.all()
     serializer_class = EditProfileSerializer
-    permission_classes=[IsOwnProfile]
+    permission_classes=[]
 
     def update(self, request, *args, **kwargs):
         id = request.path.split('/')
-        id = id[2]
+        id = int(id[2])
+        if id != request.user.profile.id:
+            return Response('you dont have permission to update this profile', status = status.HTTP_403_FORBIDDEN)
         partial = kwargs.pop('partial', False)
         instance = User.objects.get(profile=Profile.objects.get(id=id))
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -166,31 +185,6 @@ class CarViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.Update
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
-    def create(self, request, *args, **kwargs):
-        
-        driver = Driver.objects.get(profile=request.user.profile)
-        if(driver.car != None):
-            response = {
-            "error":"car already exists, try update method instead",
-            "id":f"{driver.car.id}"
-            }
-            return Response(response, status=status.HTTP_403_FORBIDDEN)
-        car = Car.objects.create(
-            color = request.data['color'],
-            model = request.data['model'],
-            plates = request.data['plates'],
-            insurance = request.data['insurance'],
-            limit = request.data['limit'],
-            travel_cost = request.data['travel_cost'])
-
-        driver.car = car
-        driver.save()
-        response = {
-            "message":"success",
-            "id":f"{car.id}"
-        }
-        return Response(response, status=status.HTTP_201_CREATED)
-        
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = Car.objects.get(driver=Driver.objects.get(profile=request.user.profile))
