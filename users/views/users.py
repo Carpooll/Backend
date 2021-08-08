@@ -54,7 +54,6 @@ def available_drivers(request):
     if request.method == 'GET':
         try:
             passenger = request.user.profile
-
             p_lat = passenger.coordinate_x
             p_lon = passenger.coordinate_y
             print("passenger data succesfully got")
@@ -104,14 +103,57 @@ def available_drivers(request):
         # serializer.is_valid(data=drivers)
         return Response(drivers, status=status.HTTP_200_OK)
 
+class PassengerViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMixin):
+    queryset = Passenger.objects.all()
+    serializer_class = PassengerSerializer
+    permissions_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
+
+    def retrieve(self, request, *args, **kwargs):
+        path = request.path.split('/')
+        id = path[2]
+        print(path)
+        try:
+            instance = Passenger.objects.get(profile=Profile.objects.get(id=id))
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
+        except:
+            message = {
+                "message" : "this passenger does not exist",
+            }
+            return Response(message, status=status.HTTP_404_NOT_FOUND)
+        
+
+class DriverViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMixin):
+    queryset = Driver.objects.all()
+    serializer_class = DriverSerializer
+    permissions_classes = [IsAuthenticated]
+    pagination_class = PageNumberPagination
+
+    def retrieve(self, request, *args, **kwargs):
+        path = request.path.split('/')
+        id = path[2]
+        print(path)
+        try:
+            instance = Driver.objects.get(profile=Profile.objects.get(id=id))
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
+        except:
+            message = {
+                "message" : "this driver does not exist",
+            }
+            return Response(message, status=status.HTTP_404_NOT_FOUND)
+        
+        
+""" 
 class PassengerListView(ListAPIView):
     '''list all users'''
     queryset = Passenger.objects.all()
     serializer_class = PassengerSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = PageNumberPagination
-
-class DriverListView(ListAPIView):
+ """
+""" class DriverListView(ListAPIView):
     '''list driver's passengers'''
 
     # def get(request, *args, **kwargs):
@@ -120,7 +162,7 @@ class DriverListView(ListAPIView):
     queryset = Driver.objects.all()
     serializer_class = DriverSerializer
     permission_classes = [IsAuthenticated]
-    pagination_class = PageNumberPagination
+    pagination_class = PageNumberPagination """
 
 """ class DriversPassengers(ListAPIView):
     '''listing the passengers of each driver'''

@@ -8,7 +8,7 @@ from django.conf.urls.static import static
 from users.views.login import UserLoginAPIView as login 
 from users.views import users
 from notifications.views import notifications
-from users.views.users import ProfileCompletionViewSet, DriverPassengersViewSet, PassengerDriver, CarViewSet, PaymentViewSet
+from users.views.users import ProfileCompletionViewSet, DriverPassengersViewSet, PassengerDriver, CarViewSet, PaymentViewSet, DriverViewSet, PassengerViewSet
 from notifications.views.notifications import RequestNotificationViewSet, RideNotificationViewSet
 from rides.views import createRideViewSet
 #Rest_frameworks
@@ -32,6 +32,10 @@ router.register(r'rides', createRideViewSet, basename='rides')
 
 router.register(r'rides/confirmation', RideNotificationViewSet, basename='ride_confirmation')
 
+router.register(r'passengers', PassengerViewSet, basename='passengers')
+
+router.register(r'drivers', DriverViewSet, basename='driver')
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 #Sign in and login process
@@ -40,8 +44,8 @@ urlpatterns = [
     path('users/verified/<token>/', users.account_verification, name="verify"),
     path('users/passenger/', users.is_passenger, name="passenger"),
 #listing users
-    path('passengers/', users.PassengerListView.as_view(), name="passengers"),
-    path('drivers/', users.DriverListView.as_view(), name="drivers"),
+#    path('passengers/', users.PassengerListView.as_view(), name="passengers"), 
+#    path('drivers/', users.DriverListView.as_view(), name="drivers"),
     path('drivers/available/', users.available_drivers, name="available drivers"),
 #notifications
     path('RequestDriver/', notifications.RequestDriver, name="request driver"),
