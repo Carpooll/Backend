@@ -7,6 +7,7 @@ from rest_framework.pagination import PageNumberPagination
 #models
 from django.contrib.auth.models import User
 from users.models import Profile, Passenger, Driver, Car
+from rides.models import Ride
 #serializers
 from users.serializers.is_passenger import IsPassenger
 #from users.serializers.users import NewUserSerializer
@@ -48,6 +49,45 @@ def is_passenger(request):
         serializer = IsPassenger(data=request.data)
         serializer.create(data=request.data)
         return Response(request.data, status=status.HTTP_200_OK)
+        
+@api_view(['GET'])
+def close_ride(request):
+    if request.method == 'GET':
+        try:
+            rides = Ride.objects.filter(driver = request.user.profile, is_active=True)
+            for ride in rides:
+                ride.is_active = False
+                ride.save()
+            response = {
+                'message':'ride successfully closed'
+            }
+            return Response(response)
+        except:
+            response = {
+                'message':'This driver has any active rides'
+            }
+            return Response(response)
+
+@api_view(['GET'])
+def driver_is_on_ride(request):
+    if request.method == 'GET':
+        driver = request.user.profile
+        rides= Ride.objects.filter(driver=driver, is_active=True)
+        response = {
+                "is_active":'False'
+            }
+        for ride in rides:
+            if(ride.is_active == True):
+                response = {
+                    "is_active":'True'
+                }
+        return Response(response)
+"""         except:
+            response = {
+                "is_active":'False'
+            }
+            return Response(response) """
+
 
 @api_view(['GET'])
 def available_drivers(request):

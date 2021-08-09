@@ -47,6 +47,8 @@ urlpatterns = [
 #    path('passengers/', users.PassengerListView.as_view(), name="passengers"), 
 #    path('drivers/', users.DriverListView.as_view(), name="drivers"),
     path('drivers/available/', users.available_drivers, name="available drivers"),
+    path('driver/on_ride/', users.driver_is_on_ride, name="driver_is_on_ride"),
+    path('rides/close/', users.close_ride, name="close"),
 #notifications
     path('RequestDriver/', notifications.RequestDriver, name="request driver"),
     path('transaction/', transaction, name="transactions"),
