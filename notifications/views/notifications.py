@@ -149,7 +149,7 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
         passenger = Profile.objects.get(id  = notification.sender.id)
 
         if requestNotification.status == 'accept': 
-
+            driver = Profile.objects.get(id = notification.sendee.id)
             passenger = Profile.objects.get(id = notification.sender.id)
             passenger = Passenger.objects.get(profile=passenger)
             driver = Profile.objects.get(id = notification.sendee.id)
@@ -176,15 +176,18 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
             data = {
             "message" : "Se acepto la solicitud"
             }
+            notification.sendee = Profile.objects.get(id = passenger.profile.id)
+            notification.sender = Profile.objects.get(id = driver.id)
         else:
+            driver = Profile.objects.get(id = notification.sendee.id)
+            passenger = Profile.objects.get(id  = notification.sender.id)
             notification.title = "the request was rejected"
             notification.text = "The driver rejected to give you a ride"
             data = {
             "message" : "Se rechazo la solicitud"
             }
-
-        notification.sendee = Profile.objects.get(id = passenger.profile.id)
-        notification.sender = Profile.objects.get(id = driver.id)
+            notification.sendee = Profile.objects.get(id = passenger.id)
+            notification.sender = Profile.objects.get(id = driver.id)
         
         notification.save()
 
