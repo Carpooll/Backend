@@ -6,6 +6,20 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 #utils
 import jwt
+#import the file from the database
+from flask_pymongo import pymongo
+from dotenv import load_dotenv
+load_dotenv()
+
+import os
+
+DB_USER = os.environ.get("DB_USER")
+DB_PASSWORD = os.environ.get("DB_PASSWORD")
+DB_NAME = os.environ.get("DB_NAME")
+print(DB_USER)
+client = pymongo.MongoClient(f"mongodb+srv://{DB_USER}:{DB_PASSWORD}@dbexample.kadqv.mongodb.net/{DB_NAME}?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE")
+db = client.iot
+
 
 class UserVerifiedSerializer(serializers.Serializer):
     """account verifications"""
@@ -30,5 +44,13 @@ class UserVerifiedSerializer(serializers.Serializer):
         payload = self.context['payload']
         user = User.objects.get(username=payload['user'])
         user.profile.is_verify = True
+        username = user.username
+        try:
+            str(db.passenger_transactions.insert_one({
+                    '_id': username,
+                    'current_balance':0 
+                }).inserted_id)
+        except:
+            pass
         user.profile.save()
         return user
