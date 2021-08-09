@@ -10,7 +10,7 @@ from users.views import users
 from notifications.views import notifications
 from users.views.users import ProfileCompletionViewSet, DriverPassengersViewSet, PassengerDriver, CarViewSet, PaymentViewSet, DriverViewSet, PassengerViewSet
 from notifications.views.notifications import RequestNotificationViewSet, RideNotificationViewSet
-from rides.views import createRideViewSet
+from rides.views import createRideViewSet, transaction
 #Rest_frameworks
 from rest_framework.routers import DefaultRouter
 
@@ -49,6 +49,6 @@ urlpatterns = [
     path('drivers/available/', users.available_drivers, name="available drivers"),
 #notifications
     path('RequestDriver/', notifications.RequestDriver, name="request driver"),
-    
+    path('transaction/', transaction, name="transactions"),
     path('',include(router.urls))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
