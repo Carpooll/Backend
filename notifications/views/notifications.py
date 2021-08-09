@@ -64,6 +64,23 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
     queryset = Notification.objects.all()
     serializer_class =  NotificationSerializer
     permissions = []
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if(instance.sendee.id != request.user.profile.id):
+            data={
+                'message':'you dont have permission to delete this instance'
+            }
+            return Response(data, status=status.HTTP_403_FORBIDDEN)
+        else:
+            data={
+                'message':'succesfully deleted'
+            }
+            self.perform_destroy(instance)
+            return Response(data,status=status.HTTP_204_NO_CONTENT)
+
+    def perform_destroy(self, instance):
+        instance.delete()
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(Notification.objects.filter(sendee = request.user.profile.id))
         notifications = Notification.objects.filter(sendee = request.user.profile.id)
