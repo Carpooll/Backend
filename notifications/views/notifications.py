@@ -66,14 +66,35 @@ class RequestNotificationViewSet(viewsets.GenericViewSet, mixins.CreateModelMixi
     permissions = []
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(Notification.objects.filter(sendee = request.user.profile.id))
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        notifications = Notification.objects.filter(sendee = request.user.profile.id)
+        response = []
+        for notification in notifications:
+            try:
+                ride_notification = RideNotification.objects.get(notification=notification)
+                _notification = {
+                    "id":notification.id,
+                    "title":notification.title,
+                    "text":notification.text,
+                    "sendee":notification.sendee.id,
+                    "sender":notification.sender.id,
+                    "date":notification.date,
+                    "ride_cost":ride_notification.cost
+                }
+            except:
+                _notification = {
+                    "id":notification.id,
+                    "title":notification.title,
+                    "text":notification.text,
+                    "sendee":notification.sendee.id,
+                    "sender":notification.sender.id,
+                    "date":notification.date,
+                }
+            
+            response.append(_notification)
+        response = {
+            "results":response
+        }
+        return Response(response)
 
 
     def create(self, request, *args, **kwargs):
