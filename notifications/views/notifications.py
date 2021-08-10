@@ -50,12 +50,16 @@ class RideNotificationViewSet(viewsets.GenericViewSet, mixins.UpdateModelMixin):
                 "message" : "Se acepto la solicitud"
             }
 
+            notification.delete()
+
             return Response(data, status=status.HTTP_201_CREATED)
         else:
             data = {
                 "message" : "Este viaje ya no esta disponible"
             }
-
+            
+            notification.delete()
+            
             return Response(data, status=status.HTTP_403_FORBIDDEN)
             
 

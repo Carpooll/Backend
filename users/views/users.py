@@ -8,6 +8,7 @@ from rest_framework.pagination import PageNumberPagination
 from django.contrib.auth.models import User
 from users.models import Profile, Passenger, Driver, Car
 from rides.models import Ride
+from notifications.models import RideNotification
 #serializers
 from users.serializers.is_passenger import IsPassenger
 #from users.serializers.users import NewUserSerializer
@@ -53,9 +54,17 @@ def is_passenger(request):
 @api_view(['GET'])
 def close_ride(request):
     if request.method == 'GET':
+        
         try:
             rides = Ride.objects.filter(driver = request.user.profile, is_active=True)
             for ride in rides:
+            
+                notifications = RideNotification.objects.filter(ride_id = ride.id)
+                for notification in notifications:
+                    try:
+                        notification.notification.delete()
+                    except:
+                        pass
                 ride.is_active = False
                 ride.save()
             response = {

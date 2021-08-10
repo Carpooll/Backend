@@ -80,7 +80,7 @@ class createRideViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins
         instance = self.get_object()
         instance.is_active = False
         instance.save()
-
+    
         data = {
             "message" : "El viaje ha terminado"
         }
