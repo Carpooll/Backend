@@ -44,7 +44,7 @@ def account_verification(request, token):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         data = {'message':'account verified successfully'}
-        return HttpResponseRedirect("https://carpooll.github.io/Web-Front-end/#//welcome")
+        return HttpResponseRedirect("https://carpooll.github.io/Web-Front-end/#/welcome")
         
 
 @api_view(['POST'])
