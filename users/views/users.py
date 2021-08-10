@@ -18,6 +18,9 @@ from users.serializers.verified import UserVerifiedSerializer
 #la formula secreta de la cangreburger
 from users.views.formule import get_distance
 
+#redirect
+from django.http import HttpResponseRedirect
+
 #permissions
 from users.permissions import IsOwnProfile, IsDriver, IsPassenger, HasCar
 from rest_framework.permissions import IsAuthenticated
@@ -41,7 +44,7 @@ def account_verification(request, token):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         data = {'message':'account verified successfully'}
-        return Response(data, status=status.HTTP_200_OK) 
+        return HttpResponseRedirect("https://carpooll.github.io/Web-Front-end/#//welcome")
         
 
 @api_view(['POST'])
