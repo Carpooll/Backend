@@ -5,7 +5,7 @@ class Profile (models.Model):
     ''''user information'''
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     #on username is saved the school id for practice reasons
-
+    image = models.ImageField(blank=True, null=True)
     phone= models.CharField(max_length=10,default=None, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now=True)

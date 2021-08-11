@@ -250,6 +250,8 @@ class DriverPassengersViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mi
         passenger = Passenger.objects.get(profile=instance)
 
         if passenger.driver.id == driver_id:
+            passenger.driver.car.limit += 1
+            passenger.driver.car.save()
             passenger.driver = None
             passenger.save()
             return Response(status=status.HTTP_200_OK)
@@ -281,6 +283,8 @@ class PassengerDriver(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins
     def destroy(self, request, *args, **kwargs):
 
         passenger = Passenger.objects.get(profile=request.user.profile)
+        passenger.driver.car.limit += 1
+        passenger.driver.car.save()
         passenger.driver = None
         passenger.save()
         return Response(status=status.HTTP_200_OK)
