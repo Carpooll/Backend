@@ -12,7 +12,7 @@ class SimpleUserSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ['id','phone','balance', 'street', 'suburb', 'postal_code', 'internal_number', 'external_number', 'coordinate_x', 'coordinate_y', '_range']
+        fields = ['id','phone','balance', 'street', 'suburb', 'postal_code', 'internal_number', 'external_number', 'coordinate_x', 'coordinate_y', '_range', 'image']
 
 class EditProfileSerializer(serializers.ModelSerializer):
     
@@ -61,7 +61,10 @@ class EditProfileSerializer(serializers.ModelSerializer):
         
         if (profile_data.get('_range', profile._range) != None):
             profile._range = profile_data.get('_range', profile._range)
-        print(profile_data.get('_range', profile._range))
+
+        if (profile_data.get('image', profile.image) != None):
+            profile.image = profile_data.get('image', profile.image)
+
 
         profile.save()
 
@@ -115,6 +118,8 @@ class UserSerializer(serializers.ModelSerializer):
         if (profile_data.get('_range', profile._range) != None):
             profile._range = profile_data.get('_range', profile._range)
 
+        if (profile_data.get('image', profile.image) != image):
+            profile.image = profile_data.get('image', profile.image)
         profile.save()
 
         return instance
@@ -123,7 +128,7 @@ class ProfileSerializerPlus(serializers.ModelSerializer):
     user = UserSerializer()
     class Meta:
         model = Profile
-        fields = ['id','user','phone','balance', 'street', 'suburb', 'postal_code', 'internal_number', 'external_number', 'coordinate_x', 'coordinate_y', '_range']
+        fields = ['id','user','phone','balance', 'street', 'suburb', 'postal_code', 'internal_number', 'external_number', 'coordinate_x', 'coordinate_y', '_range', 'image']
 
 
 class PassengerSerializer(serializers.ModelSerializer):

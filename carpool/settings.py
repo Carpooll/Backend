@@ -30,12 +30,10 @@ SECRET_KEY = django_secret
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 LOCAL = False
 
 ALLOWED_HOSTS = ['*']
-
-
 
 # Application definition
 
@@ -46,6 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
+    'cloudinary',
     'django_extensions',
 
     #others
@@ -143,6 +143,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -161,14 +162,21 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
+#Django REST Framework
+DEFAULT_FILE_STORAGE='cloudinary_storage.storage.MediaCloudinaryStorage'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#Django REST Framework
-
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'djangoapibpl',
+    'API_KEY': '739516417775793',
+    'API_SECRET': 'XHBH5J49wx-l5Bs_EkogQO9zWcc',
+}
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',
                                  ),
