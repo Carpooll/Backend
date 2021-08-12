@@ -146,7 +146,8 @@ def available_drivers(request):
                                 "last_name" : driver.profile.user.last_name,
                                 "travel_cost" : driver.car.travel_cost,
                                 "limit": driver.car.limit,
-                                "distance":distance
+                                "distance":distance,
+                                "image":driver.profile.image
                             })
             except:
                 pass
@@ -245,16 +246,22 @@ class DriverPassengersViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mi
     def destroy(self, request, *args, **kwargs):
         url = request.path.split('/')
         id = url[3]
-        driver_id = request.user.profile.id
-        instance = Profile.objects.get(id=id)
-        passenger = Passenger.objects.get(profile=instance)
-
-        if passenger.driver.id == driver_id:
-            passenger.driver.car.limit += 1
-            passenger.driver.car.save()
-            passenger.driver = None
-            passenger.save()
-            return Response(status=status.HTTP_200_OK)
+        passenger_profile = Profile.objects.get(id=id)
+        try:
+            passenger = Passenger.objects.get(profile=passenger_profile)
+            driver = Driver.objects.get(profile=Profile.objects.get(id = passenger.driver.id))
+            if passenger.driver.id == request.user.profile.id:
+                
+                    driver.car.limit +=1
+                    driver.car.save()
+                    passenger.driver = None
+                    passenger.save()
+                    return Response(status=status.HTTP_200_OK)
+        except:
+            message = {
+                'message':'relation not found',
+            }
+            return Response(message, status=status.HTTP_404_NOT_FOUND)
         else:
             message = {
                 'error':'this passenger is not linked with you'
@@ -281,14 +288,19 @@ class PassengerDriver(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins
         return Response(serializer.data) 
 
     def destroy(self, request, *args, **kwargs):
-
-        passenger = Passenger.objects.get(profile=request.user.profile)
-        passenger.driver.car.limit += 1
-        passenger.driver.car.save()
-        passenger.driver = None
-        passenger.save()
-        return Response(status=status.HTTP_200_OK)
-
+        try:
+            passenger = Passenger.objects.get(profile=request.user.profile)
+            driver = Driver.objects.get(profile=Profile.objects.get(id=passenger.driver.id))
+            driver.car.limit += 1
+            driver.car.save()
+            passenger.driver = None
+            passenger.save()
+            return Response(status=status.HTTP_200_OK)
+        except:
+            message = {
+                'error':'any driver found'
+            }
+            return Response(message, status=status.HTTP_404_NOT_FOUND)
 class ProfileCompletionViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     queryset = User.objects.all()
     serializer_class = EditProfileSerializer
